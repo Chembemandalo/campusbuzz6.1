@@ -28,7 +28,7 @@ const QuickActionCard = ({ icon, title, description, onClick }: { icon: React.Re
 
 const InnovateCard = ({ image, category, title, onClick }: { image: string, category: string, title: string, onClick: () => void }) => (
     <div onClick={onClick} className="relative rounded-lg overflow-hidden shadow-lg group cursor-pointer h-80">
-        <img src={image} alt={title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"/>
+        <img src={image} alt={title} className="w-full h-full object-cover transform group-hover:scale-105 transition-all duration-500 grayscale group-hover:grayscale-0"/>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
         <div className="absolute bottom-0 left-0 p-6 text-white">
             <span className="text-sm font-semibold uppercase tracking-wider text-yellow-300">{category}</span>
@@ -101,7 +101,7 @@ const HomePage: React.FC<HomePageProps> = ({ onJoin, slides, onNavigate }) => {
                     image="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop"
                     category="Campus Buzz"
                     title="Mentors"
-                    onClick={() => onNavigate('blog')}
+                    onClick={() => onNavigate('mentors')}
                 />
                 <InnovateCard
                     image="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?q=80&w=2070&auto=format&fit=crop"

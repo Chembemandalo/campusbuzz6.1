@@ -9,6 +9,8 @@ import {
     VideoCameraIcon, 
     CalendarDaysIcon, 
     ChatBubbleOvalLeftEllipsisIcon,
+    QuestionMarkCircleIcon,
+    UsersIcon,
 } from './icons';
 
 interface SidebarLinkProps {
@@ -50,11 +52,12 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ currentUser, onNavigate, curr
                 <ul className="space-y-1">
                     <SidebarLink icon={NewspaperIcon} label="Newsfeed" onClick={() => onNavigate('newsfeed')} isActive={currentPage === 'newsfeed'} />
                     <SidebarLink icon={ListBulletIcon} label="My Timeline" onClick={() => onNavigate('profile', currentUser)} isActive={currentPage === 'profile'} />
+                    <SidebarLink icon={UsersIcon} label="Friends" onClick={() => onNavigate('friends')} isActive={currentPage === 'friends'} />
                     <SidebarLink icon={UserGroupIcon} label="Groups" onClick={() => onNavigate('groups')} isActive={currentPage === 'groups'} />
                     <SidebarLink icon={UserPlusIcon} label="Mentors" onClick={() => onNavigate('mentors')} isActive={currentPage === 'mentors'} />
                     <SidebarLink icon={CalendarDaysIcon} label="Event Schedule" onClick={() => onNavigate('events')} isActive={currentPage === 'events'} />
                     <SidebarLink icon={PhotoIcon} label="Gallery" onClick={() => onNavigate('gallery')} isActive={currentPage === 'gallery'} />
-                    <SidebarLink icon={VideoCameraIcon} label="Videos" onClick={handleUnimplementedClick} />
+                    <SidebarLink icon={QuestionMarkCircleIcon} label="Lost & Found" onClick={() => onNavigate('lostandfound')} isActive={currentPage === 'lostandfound'} />
                     <SidebarLink icon={ChatBubbleOvalLeftEllipsisIcon} label="Forum" onClick={handleUnimplementedClick} />
                 </ul>
             </nav>

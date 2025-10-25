@@ -13,16 +13,18 @@ import {
     MegaphoneIcon,
     NewspaperIcon,
     BuildingStorefrontIcon,
-    UserPlusIcon
+    UserPlusIcon,
+    UserGroupIcon
 } from './icons';
 
 interface HeaderProps {
-  currentUser: User;
+  currentUser?: User;
   onNavigate: (page: Page, data?: User | Article) => void;
   onSearch: (query: string) => void;
   totalUnreadMessages: number;
   notifications: Notification[];
   onMarkAllNotificationsRead: () => void;
+  onNotificationClick: (notification: Notification) => void;
   isAuthenticated: boolean;
   onLogin: () => void;
   onLogout: () => void;
@@ -37,7 +39,7 @@ const NotificationIconMap: Record<Notification['type'], React.FC<{className?: st
     post: NewspaperIcon,
     listing: BuildingStorefrontIcon,
     friend_request: UserPlusIcon,
-    friend_request_accepted: UserPlusIcon,
+    friend_request_accepted: UserGroupIcon,
     article_like: HeartIcon,
     article_comment: ChatBubbleOvalLeftEllipsisIcon,
 };
@@ -49,6 +51,7 @@ const Header: React.FC<HeaderProps> = ({
   totalUnreadMessages, 
   notifications, 
   onMarkAllNotificationsRead,
+  onNotificationClick,
   isAuthenticated,
   onLogin,
   onLogout,
@@ -97,6 +100,11 @@ const Header: React.FC<HeaderProps> = ({
         onLogin();
     }
   };
+  
+  const handleNotificationItemClick = (notification: Notification) => {
+    setNotificationsOpen(false); // Close dropdown first
+    onNotificationClick(notification);
+  };
 
   return (
     <header className="bg-gradient-to-r from-indigo-700 to-purple-800 text-white shadow-lg sticky top-0 z-50">
@@ -128,13 +136,13 @@ const Header: React.FC<HeaderProps> = ({
             <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="hover:text-yellow-300 transition-colors">Marketplace</a>
             <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="hover:text-yellow-300 transition-colors">Jobs</a>
             <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="hover:text-yellow-300 transition-colors">Mentors</a>
-            <a href="#" className="hover:text-yellow-300 transition-colors">Contact Us</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('contact'); }} className="hover:text-yellow-300 transition-colors">Contact Us</a>
           </nav>
 
           {/* Right side icons and user */}
-          {isAuthenticated ? (
+          {isAuthenticated && currentUser ? (
             <div className="hidden md:flex items-center space-x-4">
-              <div className="relative" style={{ visibility: currentPage === 'newsfeed' ? 'hidden' : 'visible' }}>
+              <div className="relative">
                 <input 
                   type="text" 
                   placeholder="Search posts..." 
@@ -177,12 +185,21 @@ const Header: React.FC<HeaderProps> = ({
                                   notifications.map(n => {
                                       const Icon = NotificationIconMap[n.type] || BellIcon;
                                       return (
-                                          <div key={n.id} className={`p-3 border-b border-gray-100 flex items-start space-x-3 ${!n.isRead ? 'bg-indigo-50' : 'bg-white'} hover:bg-gray-50`}>
-                                              <div className="flex-shrink-0 mt-1">
-                                                  <Icon className="w-5 h-5 text-gray-400"/>
+                                          <div key={n.id} onClick={() => handleNotificationItemClick(n)} className={`p-3 border-b border-gray-100 flex items-start space-x-3 cursor-pointer ${!n.isRead ? 'bg-indigo-50' : 'bg-white'} hover:bg-gray-50`}>
+                                              <div className="flex-shrink-0 mt-1 relative">
+                                                  {n.fromUser ? (
+                                                      <img src={n.fromUser.avatarUrl} alt="" className="w-8 h-8 rounded-full" />
+                                                  ) : (
+                                                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                                          <Icon className="w-5 h-5 text-gray-400"/>
+                                                      </div>
+                                                  )}
+                                                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow">
+                                                      <Icon className="w-4 h-4 text-indigo-500" />
+                                                  </div>
                                               </div>
                                               <div>
-                                                  <p className={`text-sm ${!n.isRead ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>{n.text}</p>
+                                                  <p className={`text-sm ${!n.isRead ? 'text-gray-800' : 'text-gray-600'}`}>{n.text}</p>
                                                   <p className="text-xs text-gray-400 mt-1">{n.timestamp}</p>
                                               </div>
                                           </div>

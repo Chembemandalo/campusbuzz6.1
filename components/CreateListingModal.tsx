@@ -21,7 +21,8 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      const imagePromises = filesArray.map(file => {
+      // FIX: Explicitly type the 'file' parameter to fix type inference issue.
+      const imagePromises = filesArray.map((file: File) => {
         return new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);

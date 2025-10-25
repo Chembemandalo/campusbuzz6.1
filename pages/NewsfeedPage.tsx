@@ -84,10 +84,6 @@ const NewsfeedPage: React.FC<NewsfeedPageProps> = ({
 
   return (
     <div className="bg-gray-100 min-h-screen">
-       {/* Search Bar Section */}
-      <div className="bg-slate-100 py-8">
-        {/* The search bar was here. This container is left to maintain spacing. */}
-      </div>
       <HeroSlider slides={heroSlides} />
       <div className="container mx-auto px-4 pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Sidebar */}

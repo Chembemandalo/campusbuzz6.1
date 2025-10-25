@@ -48,7 +48,8 @@ const SingleArticlePage: React.FC<SingleArticlePageProps> = ({ article, currentU
   // Simplified reaction state for demo purposes
   const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
 
-  const totalReactions = Object.values(article.reactions).reduce((a, b) => a + b, 0);
+  // FIX: Explicitly type accumulator and current value in reduce to fix TS error.
+  const totalReactions = Object.values(article.reactions).reduce((a: number, b: number) => a + b, 0);
   const isAuthor = currentUser.id === article.author.id || currentUser.role === 'Admin';
 
   useEffect(() => {

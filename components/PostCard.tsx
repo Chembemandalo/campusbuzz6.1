@@ -52,7 +52,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, onNavigate, onEd
   const [reactionMenuVisible, setReactionMenuVisible] = useState(false);
   const menuTimeoutRef = useRef<number | null>(null);
 
-  const totalReactions = Object.values(reactionCounts).reduce((a, b) => a + b, 0);
+  // FIX: Explicitly type accumulator and current value in reduce to fix TS error.
+  const totalReactions = Object.values(reactionCounts).reduce((a: number, b: number) => a + b, 0);
 
   useEffect(() => {
     // Sync local state if post prop changes

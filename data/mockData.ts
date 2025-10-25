@@ -1,4 +1,4 @@
-import { User, Post, Notification, Conversation, Event, MarketplaceItem, Article, Group, FriendRequest, UserSettings, HeroSlide, ScheduleItem, Job, MentorshipRequest } from '../types';
+import { User, Post, Notification, Conversation, Event, MarketplaceItem, Article, Group, FriendRequest, UserSettings, HeroSlide, ScheduleItem, Job, MentorshipRequest, LostAndFoundItem } from '../types';
 
 const defaultSettings: UserSettings = {
   theme: 'light',
@@ -39,20 +39,20 @@ export const mockHomePageSlides: HeroSlide[] = [
 
 
 export const mockUsers: User[] = [
-  { id: 'u1', name: 'Jane Doe', avatarUrl: 'https://picsum.photos/id/237/200/200', coverPhotoUrl: 'https://picsum.photos/id/1015/1000/300', bio: 'CS student passionate about AI and web development. 🚀 As a mentor, I focus on helping students navigate their early careers in tech, offering guidance on projects, internships, and interview preparation.', role: 'Student', department: 'Computer Science', major: 'Artificial Intelligence', joinedDate: 'August 2022', onlineStatus: 'online', friends: ['u3', 'u4'], status: 'active', settings: defaultSettings, isMentor: true, mentorshipCommunityId: 'g5', acceptingNewMentees: true, rating: { score: 4.9, reviews: 137 }, institute: 'Rockview University', joiningYear: 2022, passingYear: 2026, sessionFee: 15 },
-  { id: 'u2', name: 'John Smith', avatarUrl: 'https://picsum.photos/id/238/200/200', coverPhotoUrl: 'https://picsum.photos/id/1016/1000/300', bio: 'University Administrator | Keeping things running smoothly.', role: 'Admin', department: 'Engineering', major: 'Mechanical Engineering', joinedDate: 'July 2018', onlineStatus: 'offline', friends: [], status: 'active', settings: { ...defaultSettings, theme: 'light' }, rating: { score: 4.8, reviews: 98 }, institute: 'Rockview University', joiningYear: 2010, passingYear: 2014, sessionFee: 0 },
-  { id: 'u3', name: 'Alice Johnson', avatarUrl: 'https://picsum.photos/id/239/200/200', coverPhotoUrl: 'https://picsum.photos/id/1018/1000/300', bio: 'Art major with a love for photography and design.', role: 'Student', department: 'Arts & Humanities', major: 'Fine Arts', joinedDate: 'September 2021', onlineStatus: 'online', friends: ['u1'], status: 'active', settings: defaultSettings, rating: { score: 4.4, reviews: 25 }, institute: 'Rockview University', joiningYear: 2021, passingYear: 2025, sessionFee: 0 },
-  { id: 'u4', name: 'Robert Brown', avatarUrl: 'https://picsum.photos/id/240/200/200', coverPhotoUrl: 'https://picsum.photos/id/1019/1000/300', bio: 'Future software engineer. Currently learning React.', role: 'Student', department: 'Computer Science', major: 'Software Engineering', joinedDate: 'August 2022', onlineStatus: 'offline', friends: ['u1'], status: 'suspended', settings: defaultSettings, rating: { score: 4.5, reviews: 112 }, institute: 'Rockview University', joiningYear: 2022, passingYear: 2026, sessionFee: 20 },
-  { id: 'u5', name: 'Emily White', avatarUrl: 'https://picsum.photos/id/241/200/200', coverPhotoUrl: 'https://picsum.photos/id/1020/1000/300', bio: 'Biology student exploring the wonders of the natural world.', role: 'Student', department: 'Biology', major: 'Molecular Biology', joinedDate: 'August 2023', onlineStatus: 'online', friends: [], status: 'active', settings: defaultSettings, rating: { score: 4.7, reviews: 56 }, institute: 'Rockview University', joiningYear: 2023, passingYear: 2027, sessionFee: 10 },
-  { id: 'u6', name: 'Michael Green', avatarUrl: 'https://picsum.photos/id/242/200/200', coverPhotoUrl: 'https://picsum.photos/id/1021/1000/300', bio: 'Helping prospective students find their home at Rockview! With years of experience in university admissions, I mentor students on application strategies and personal statement writing.', role: 'Staff', department: 'Admissions', major: 'N/A', joinedDate: 'March 2020', onlineStatus: 'online', friends: [], status: 'active', settings: defaultSettings, isMentor: true, mentorshipCommunityId: 'g6', acceptingNewMentees: true, rating: { score: 4.9, reviews: 210 }, institute: 'Rockview University Staff', sessionFee: 0 },
+  { id: 'u1', name: 'Jane Doe', email: 'jane.doe@rockview.edu', password: 'password', avatarUrl: 'https://picsum.photos/id/237/200/200', coverPhotoUrl: 'https://picsum.photos/id/1015/1000/300', bio: 'CS student passionate about AI and web development. 🚀 As a mentor, I focus on helping students navigate their early careers in tech, offering guidance on projects, internships, and interview preparation.', role: 'Student', department: 'Computer Science', major: 'Artificial Intelligence', joinedDate: 'August 2022', onlineStatus: 'online', friends: ['u3', 'u4'], status: 'active', settings: defaultSettings, isMentor: true, mentorshipCommunityId: 'g5', acceptingNewMentees: true, rating: { score: 4.9, reviews: 137 }, institute: 'Rockview University', joiningYear: 2022, passingYear: 2026, sessionFee: 15 },
+  { id: 'u2', name: 'John Smith', email: 'admin@gmail.com', password: 'admin123', avatarUrl: 'https://picsum.photos/id/238/200/200', coverPhotoUrl: 'https://picsum.photos/id/1016/1000/300', bio: 'University Administrator | Keeping things running smoothly.', role: 'Admin', department: 'Engineering', major: 'Mechanical Engineering', joinedDate: 'July 2018', onlineStatus: 'offline', friends: [], status: 'active', settings: { ...defaultSettings, theme: 'light' }, rating: { score: 4.8, reviews: 98 }, institute: 'Rockview University', joiningYear: 2010, passingYear: 2014, sessionFee: 0 },
+  { id: 'u3', name: 'Alice Johnson', email: 'alice.j@rockview.edu', password: 'password', avatarUrl: 'https://picsum.photos/id/239/200/200', coverPhotoUrl: 'https://picsum.photos/id/1018/1000/300', bio: 'Art major with a love for photography and design.', role: 'Student', department: 'Arts & Humanities', major: 'Fine Arts', joinedDate: 'September 2021', onlineStatus: 'online', friends: ['u1'], status: 'active', settings: defaultSettings, rating: { score: 4.4, reviews: 25 }, institute: 'Rockview University', joiningYear: 2021, passingYear: 2025, sessionFee: 0 },
+  { id: 'u4', name: 'Robert Brown', email: 'rob.brown@rockview.edu', password: 'password', avatarUrl: 'https://picsum.photos/id/240/200/200', coverPhotoUrl: 'https://picsum.photos/id/1019/1000/300', bio: 'Future software engineer. Currently learning React.', role: 'Student', department: 'Computer Science', major: 'Software Engineering', joinedDate: 'August 2022', onlineStatus: 'offline', friends: ['u1'], status: 'suspended', settings: defaultSettings, rating: { score: 4.5, reviews: 112 }, institute: 'Rockview University', joiningYear: 2022, passingYear: 2026, sessionFee: 20 },
+  { id: 'u5', name: 'Emily White', email: 'emily.w@rockview.edu', password: 'password', avatarUrl: 'https://picsum.photos/id/241/200/200', coverPhotoUrl: 'https://picsum.photos/id/1020/1000/300', bio: 'Biology student exploring the wonders of the natural world.', role: 'Student', department: 'Biology', major: 'Molecular Biology', joinedDate: 'August 2023', onlineStatus: 'online', friends: [], status: 'active', settings: defaultSettings, rating: { score: 4.7, reviews: 56 }, institute: 'Rockview University', joiningYear: 2023, passingYear: 2027, sessionFee: 10 },
+  { id: 'u6', name: 'Michael Green', email: 'michael.g@rockview.edu', password: 'password', avatarUrl: 'https://picsum.photos/id/242/200/200', coverPhotoUrl: 'https://picsum.photos/id/1021/1000/300', bio: 'Helping prospective students find their home at Rockview! With years of experience in university admissions, I mentor students on application strategies and personal statement writing.', role: 'Staff', department: 'Admissions', major: 'N/A', joinedDate: 'March 2020', onlineStatus: 'online', friends: [], status: 'active', settings: defaultSettings, isMentor: true, mentorshipCommunityId: 'g6', acceptingNewMentees: true, rating: { score: 4.9, reviews: 210 }, institute: 'Rockview University Staff', sessionFee: 0 },
 ];
 
-export const mockCurrentUser: User = mockUsers[1];
+export const mockCurrentUser: User = mockUsers[0];
 
 export const mockPosts: Post[] = [
   {
     id: 'p1',
-    author: mockUsers[2],
+    author: mockUsers[0],
     content: 'Just finished my final project for the semester! So relieved. Shoutout to everyone in the library working late!',
     imageUrl: 'https://picsum.photos/id/101/800/600',
     timestamp: '2 hours ago',
@@ -60,8 +60,8 @@ export const mockPosts: Post[] = [
     likes: 125,
     reactions: { like: 75, love: 40, haha: 8, sad: 1, angry: 1 },
     comments: [
-      { id: 'c1', author: mockUsers[1], text: 'Congratulations, Alice!', timestamp: '1 hour ago' },
-      { id: 'c2', author: mockUsers[0], text: 'Awesome work! Time to celebrate!', timestamp: '30 mins ago' },
+      { id: 'c1', author: mockUsers[1], text: 'Congratulations!', timestamp: '1 hour ago' },
+      { id: 'c2', author: mockUsers[2], text: 'Awesome work! Time to celebrate!', timestamp: '30 mins ago' },
     ],
     shares: 12,
     eventId: 'e1'
@@ -107,10 +107,12 @@ export const mockPosts: Post[] = [
 ];
 
 export const mockNotifications: Notification[] = [
-    { id: 'n1', text: 'John Smith liked your post.', isRead: false, timestamp: '15m ago', type: 'like' },
-    { id: 'n2', text: 'You have an upcoming event: "Career Fair 2024".', isRead: false, timestamp: '1h ago', type: 'event' },
-    { id: 'n3', text: 'Alice Johnson commented on your photo.', isRead: false, timestamp: '3h ago', type: 'comment' },
-    { id: 'n4', text: 'New announcement in the "Academics" category.', isRead: true, timestamp: '1d ago', type: 'announcement' },
+    { id: 'n1', text: 'Alice Johnson commented on your post.', fromUser: mockUsers[2], linkId: 'p3', isRead: false, timestamp: '15m ago', type: 'comment' },
+    { id: 'n2', text: 'You have an upcoming event: "Rockview ku chalo".', linkId: 'e1', isRead: false, timestamp: '1h ago', type: 'event' },
+    { id: 'n3', text: 'Robert Brown liked your post about the Raptors game.', fromUser: mockUsers[3], linkId: 'p3', isRead: false, timestamp: '3h ago', type: 'like' },
+    { id: 'n4', text: 'New announcement from John Smith.', fromUser: mockUsers[1], linkId: 'p2', isRead: true, timestamp: '1d ago', type: 'announcement' },
+    { id: 'n5', text: 'Emily White sent you a friend request.', fromUser: mockUsers[4], linkId: 'fr1', isRead: false, timestamp: '2h ago', type: 'friend_request' },
+    { id: 'n6', text: 'John Smith accepted your friend request.', fromUser: mockUsers[1], linkId: 'u2', isRead: true, timestamp: '2d ago', type: 'friend_request_accepted' },
 ];
 
 export const mockConversations: Conversation[] = [
@@ -318,8 +320,8 @@ export const mockGroups: Group[] = [
 ];
 
 export const mockFriendRequests: FriendRequest[] = [
-    { id: 'fr1', fromUser: mockUsers[4], toUser: mockCurrentUser, timestamp: '2 hours ago', status: 'pending' },
-    { id: 'fr2', fromUser: mockUsers[5], toUser: mockCurrentUser, timestamp: '1 day ago', status: 'pending' },
+    { id: 'fr1', fromUser: mockUsers[4], toUser: mockUsers[0], timestamp: '2 hours ago', status: 'pending' },
+    { id: 'fr2', fromUser: mockUsers[5], toUser: mockUsers[0], timestamp: '1 day ago', status: 'pending' },
 ];
 
 export const mockMentorshipRequests: MentorshipRequest[] = [
@@ -416,3 +418,63 @@ export const mockJobs: Job[] = [
         applyLink: '#'
     }
 ];
+
+export const mockLostAndFoundItems: LostAndFoundItem[] = [
+    {
+        id: 'lf1',
+        type: 'lost',
+        itemName: 'Black Jansport Backpack',
+        description: 'Lost my backpack somewhere near the main library. It has a CS101 textbook and a blue water bottle inside. Please contact me if you find it!',
+        imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb68c6a62?q=80&w=1887&auto=format&fit=crop',
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        contact: 'jane.doe@rockview.edu',
+        postedBy: mockUsers[0],
+        postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    },
+    {
+        id: 'lf2',
+        type: 'found',
+        itemName: 'iPhone 13 with a green case',
+        description: 'Found an iPhone near the student center cafeteria. The lock screen is a picture of a golden retriever. Currently holding it at the student center front desk.',
+        imageUrl: 'https://images.unsplash.com/photo-1633424991336-23758b77e3c4?q=80&w=1964&auto=format&fit=crop',
+        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+        contact: 'Student Center Front Desk',
+        postedBy: mockUsers[5],
+        postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+    },
+    {
+        id: 'lf3',
+        type: 'found',
+        itemName: 'Set of Keys',
+        description: 'Found a set of keys on a Rockview University lanyard on the main campus quad. Has a car key and two smaller keys.',
+        imageUrl: 'https://images.unsplash.com/photo-1564375117282-13e31637c373?q=80&w=1887&auto=format&fit=crop',
+        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+        contact: 'Campus Security',
+        postedBy: mockUsers[1],
+        postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+    },
+    {
+        id: 'lf4',
+        type: 'lost',
+        itemName: 'Student ID Card - Robert Brown',
+        description: 'I think I dropped my ID card somewhere in the engineering building this morning. If found, please drop it at the admissions office or email me.',
+        imageUrl: 'https://images.unsplash.com/photo-1611603599225-5b403c4f4946?q=80&w=1780&auto=format&fit=crop',
+        date: new Date(),
+        contact: 'rob.brown@rockview.edu',
+        postedBy: mockUsers[3],
+        postedAt: new Date()
+    },
+    {
+        id: 'lf5',
+        type: 'found',
+        itemName: 'Textbook - "Introduction to Algorithms"',
+        description: 'This textbook was left behind in lecture hall 203 after the 3pm class. It has some highlighting on the first few chapters.',
+        imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop',
+        date: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000), // 40 days ago, should be expired
+        contact: 'Professor Green\'s office',
+        postedBy: mockUsers[5],
+        postedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000)
+    }
+];
+
+export { defaultSettings };

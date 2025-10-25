@@ -1,4 +1,4 @@
-export type Page = 'home' | 'newsfeed' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery';
+export type Page = 'home' | 'newsfeed' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery' | 'auth' | 'contact' | 'lostandfound' | 'friends';
 
 export type ReactionType = 'like' | 'love' | 'haha' | 'sad' | 'angry';
 
@@ -21,6 +21,8 @@ export interface UserSettings {
 export interface User {
   id: string;
   name: string;
+  email: string;
+  password?: string;
   avatarUrl: string;
   coverPhotoUrl: string;
   bio: string;
@@ -79,6 +81,8 @@ export interface Notification {
   isRead: boolean;
   timestamp: string;
   type: 'like' | 'comment' | 'event' | 'announcement' | 'post' | 'listing' | 'friend_request' | 'friend_request_accepted' | 'article_like' | 'article_comment';
+  linkId?: string; // ID of post, event, article, user etc.
+  fromUser?: User; // Optional: User who generated the notification
 }
 
 export interface Message {
@@ -193,4 +197,16 @@ export interface MentorshipRequest {
   communityId: string;
   status: 'pending' | 'accepted' | 'rejected';
   timestamp: string;
+}
+
+export interface LostAndFoundItem {
+  id: string;
+  type: 'lost' | 'found';
+  itemName: string;
+  description: string;
+  imageUrl: string;
+  date: Date; // date lost or found
+  contact: string; // email or phone
+  postedBy: User;
+  postedAt: Date;
 }
