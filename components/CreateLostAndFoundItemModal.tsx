@@ -15,6 +15,7 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [imageUrl, setImageUrl] = useState('');
     const [contact, setContact] = useState('');
+    const [location, setLocation] = useState('');
     const [isCreating, setIsCreating] = useState(false);
     
     const resetForm = () => {
@@ -24,6 +25,7 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
         setDate(new Date().toISOString().split('T')[0]);
         setImageUrl('');
         setContact('');
+        setLocation('');
     };
 
     const handleClose = () => {
@@ -36,6 +38,7 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
         if (isCreating) return;
         
         setIsCreating(true);
+        // Fix: Add the missing 'location' property to the object.
         await onCreateItem({
             type,
             itemName,
@@ -43,6 +46,7 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
             date: new Date(date),
             imageUrl: imageUrl || 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop',
             contact,
+            location,
         });
         setIsCreating(false);
         handleClose();
@@ -68,6 +72,7 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
                         </div>
                         <Input id="itemName" label="Item Name" value={itemName} onChange={e => setItemName(e.target.value)} required placeholder="e.g., Black Jansport Backpack" />
                         <TextArea id="description" label="Description" value={description} onChange={e => setDescription(e.target.value)} required rows={4} placeholder="Provide details like where you lost/found it, identifying features, etc." />
+                        <Input id="location" label="Location" value={location} onChange={e => setLocation(e.target.value)} required placeholder="e.g., Near the main library" />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Input id="date" label={type === 'lost' ? 'Date Lost' : 'Date Found'} type="date" value={date} onChange={e => setDate(e.target.value)} required />
                             <Input id="contact" label="Contact Info" value={contact} onChange={e => setContact(e.target.value)} required placeholder="Your email or phone number" />

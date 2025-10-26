@@ -11,6 +11,7 @@ interface CreateEventModalProps {
 const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, onCreateEvent }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
@@ -18,12 +19,14 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isCreating || !title || !description || !startTime || !endTime) return;
+    if (isCreating || !title || !description || !startTime || !endTime || !location) return;
 
     setIsCreating(true);
+    // Fix: Add location to the event data object to match the required type.
     await onCreateEvent({
         title,
         description,
+        location,
         imageUrl: imageUrl || `https://picsum.photos/seed/${title.replace(/\s+/g, '-')}/1200/600`,
         startTime,
         endTime,
@@ -34,6 +37,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     setTitle('');
     setDescription('');
     setImageUrl('');
+    setLocation('');
     setStartTime('');
     setEndTime('');
   };
@@ -60,6 +64,13 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     <label htmlFor="event-description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                     <textarea
                         id="event-description" value={description} onChange={(e) => setDescription(e.target.value)} required rows={4}
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                </div>
+                 <div>
+                    <label htmlFor="event-location" className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <input
+                        type="text" id="event-location" value={location} onChange={(e) => setLocation(e.target.value)} required
                         className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                 </div>

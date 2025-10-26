@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Group, User } from '../types';
 import GroupCard from '../components/GroupCard';
 import { UserGroupIcon } from '../components/icons';
@@ -11,6 +11,12 @@ interface GroupsPageProps {
 }
 
 const GroupsPage: React.FC<GroupsPageProps> = ({ groups, currentUser, onJoinGroup, onLeaveGroup }) => {
+  const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
+
+  const handleToggleExpand = (groupId: string) => {
+    setExpandedGroupId(prevId => (prevId === groupId ? null : groupId));
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="bg-gradient-to-r from-sky-500 to-indigo-500 text-white">
@@ -30,6 +36,8 @@ const GroupsPage: React.FC<GroupsPageProps> = ({ groups, currentUser, onJoinGrou
               key={group.id} 
               group={group} 
               isMember={group.members.includes(currentUser.id)}
+              isExpanded={expandedGroupId === group.id}
+              onToggleExpand={() => handleToggleExpand(group.id)}
               onJoin={() => onJoinGroup(group.id)}
               onLeave={() => onLeaveGroup(group.id)}
             />

@@ -194,7 +194,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, onNavigate, onEd
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="p-4">
         <div className="flex items-start justify-between">
             <div className="flex items-center space-x-3">
@@ -247,7 +247,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, onNavigate, onEd
       )}
       <div className="p-4">
         {/* Stats */}
-        <div className="flex justify-between items-center text-gray-500 text-sm border-b pb-2">
+        <div className="flex justify-between items-center text-gray-500 text-sm pb-2">
             <div>
                 <span>{totalReactions} Reactions</span>
             </div>
@@ -257,7 +257,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, onNavigate, onEd
             </div>
         </div>
         {/* Actions */}
-        <div className="flex justify-around pt-2">
+        <div className="flex justify-around pt-2 mt-2 border-t">
             <div 
                 className="relative flex-1 flex justify-center"
                 onMouseLeave={handleMouseLeaveLike}

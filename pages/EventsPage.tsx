@@ -1,18 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import { Event as EventType } from '../types';
+import { Event as EventType, User } from '../types';
 import Calendar from '../components/Calendar';
 import EventCard from '../components/EventCard';
 import { CalendarDaysIcon, MegaphoneIcon } from '../components/icons';
 
 interface EventsPageProps {
   events: EventType[];
-  onViewDetails: (event: EventType) => void;
+  currentUser: User;
+  onRsvp: (eventId: string) => Promise<void>;
   onOpenCreateEventModal: () => void;
 }
 
-const EventsPage: React.FC<EventsPageProps> = ({ events, onViewDetails, onOpenCreateEventModal }) => {
+const EventsPage: React.FC<EventsPageProps> = ({ events, currentUser, onRsvp, onOpenCreateEventModal }) => {
   const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
 
   const sortedEvents = useMemo(() => 
     [...events].sort((a, b) => a.startTime.getTime() - b.startTime.getTime()),
@@ -32,6 +34,10 @@ const EventsPage: React.FC<EventsPageProps> = ({ events, onViewDetails, onOpenCr
   }, [sortedEvents, selectedDate]);
 
   const calendarEvents = sortedEvents.map(e => ({ date: e.startTime }));
+
+  const handleToggleExpand = (eventId: string) => {
+    setExpandedEventId(prevId => (prevId === eventId ? null : eventId));
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
@@ -84,7 +90,14 @@ const EventsPage: React.FC<EventsPageProps> = ({ events, onViewDetails, onOpenCr
             <div className="space-y-6">
             {filteredEvents.length > 0 ? (
                 filteredEvents.map(event => (
-                    <EventCard key={event.id} event={event} onViewDetails={onViewDetails} />
+                    <EventCard 
+                        key={event.id} 
+                        event={event} 
+                        isExpanded={expandedEventId === event.id}
+                        onToggleExpand={() => handleToggleExpand(event.id)}
+                        currentUser={currentUser}
+                        onRsvp={onRsvp}
+                    />
                 ))
             ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500">

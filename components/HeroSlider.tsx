@@ -26,10 +26,19 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides }) => {
     };
     
     useEffect(() => {
+        if (slides.length <= 1) return;
         const timer = setTimeout(nextSlide, 7000); // Auto-slide every 7 seconds
         return () => clearTimeout(timer);
-    }, [currentIndex, nextSlide]);
+    }, [currentIndex, nextSlide, slides.length]);
 
+
+    if (!slides || slides.length === 0) {
+        return (
+            <div className="h-[500px] w-full m-auto relative group bg-gray-200 flex items-center justify-center">
+                <p className="text-gray-500">No banner content available.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="h-[500px] w-full m-auto relative group">

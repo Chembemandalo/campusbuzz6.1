@@ -64,7 +64,7 @@ const ProfilePage: React.FC<ProfilePageProps> = (props) => {
   const renderInteractionButtons = () => {
     if (isCurrentUserProfile) {
       return (
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap gap-2 justify-center sm:justify-end">
            <button 
             onClick={onOpenCreateJobModal}
             className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 flex items-center space-x-2">
@@ -86,7 +86,7 @@ const ProfilePage: React.FC<ProfilePageProps> = (props) => {
 
     if (isFriend) {
         return (
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap gap-2 justify-center sm:justify-end">
                 <button onClick={() => onUnfriend(user.id)} className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300 flex items-center space-x-2">
                     <UserMinusIcon className="w-4 h-4"/>
                     <span>Unfriend</span>
@@ -108,7 +108,7 @@ const ProfilePage: React.FC<ProfilePageProps> = (props) => {
     }
     
     return (
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap gap-2 justify-center sm:justify-end">
             <button onClick={() => onSendFriendRequest(user.id)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 flex items-center space-x-2">
                 <UserPlusIcon className="w-4 h-4" />
                 <span>Add Friend</span>

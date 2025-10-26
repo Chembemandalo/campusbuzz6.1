@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { MarketplaceItem, User } from '../types';
 import MarketplaceItemCard from '../components/MarketplaceItemCard';
-import { BuildingStorefrontIcon, CartIcon } from '../components/icons';
+import { BuildingStorefrontIcon } from '../components/icons';
 
 interface MarketplacePageProps {
   items: MarketplaceItem[];
@@ -16,6 +16,19 @@ const CATEGORIES = ['All', 'Textbooks', 'Electronics', 'Furniture', 'Clothing', 
 const MarketplacePage: React.FC<MarketplacePageProps> = ({ items, currentUser, onInitiateChat, onUpdateListingStatus, onOpenCreateListingModal }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
+
+  const handleToggleExpand = (itemId: string) => {
+    // This function ensures only one item can be expanded at a time by using a functional state update.
+    // Clicking a new item will close the previously expanded one.
+    // Clicking the currently expanded item will collapse it.
+    setExpandedItemId(currentExpandedId => {
+      if (currentExpandedId === itemId) {
+        return null; // Collapse if the same item is clicked again.
+      }
+      return itemId; // Otherwise, expand the new item.
+    });
+  };
   
   const filteredItems = useMemo(() => {
     return items.filter(item => {
@@ -42,7 +55,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ items, currentUser, o
                 <p className="text-indigo-200 mt-1">Home / Shop</p>
             </div>
             <div className="absolute -right-4 -top-4 text-white/10">
-                 <CartIcon className="w-32 h-32 transform rotate-12" />
+                 <span className="block text-[8rem] transform rotate-12">🛒</span>
             </div>
         </div>
       </div>
@@ -95,6 +108,8 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ items, currentUser, o
                           key={item.id} 
                           item={item} 
                           currentUser={currentUser}
+                          isExpanded={expandedItemId === item.id}
+                          onToggleExpand={() => handleToggleExpand(item.id)}
                           onInitiateChat={onInitiateChat}
                           onUpdateStatus={onUpdateListingStatus}
                         />

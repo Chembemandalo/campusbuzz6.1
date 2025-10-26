@@ -1,4 +1,4 @@
-export type Page = 'home' | 'newsfeed' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery' | 'auth' | 'contact' | 'lostandfound' | 'friends';
+export type Page = 'home' | 'community' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery' | 'auth' | 'contact' | 'lostandfound' | 'friends' | 'library' | 'todolist' | 'clearance' | 'polls' | 'privacy' | 'terms' | 'cookies' | 'sitemap' | 'about';
 
 export type ReactionType = 'like' | 'love' | 'haha' | 'sad' | 'angry';
 
@@ -110,6 +110,7 @@ export interface Event {
   endTime: Date;
   organizer: User;
   attendees: string[]; // Array of user IDs
+  location: string;
 }
 
 export interface MarketplaceItem {
@@ -209,4 +210,46 @@ export interface LostAndFoundItem {
   contact: string; // email or phone
   postedBy: User;
   postedAt: Date;
+  location: string;
+}
+
+export interface LibraryResource {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  type: 'Book' | 'Journal' | 'Paper';
+  fileUrl: string;
+  coverImageUrl?: string;
+  description: string;
+  publishedDate: Date;
+}
+
+export type TodoStatus = 'todo' | 'inprogress' | 'done';
+
+export interface TodoItem {
+  id: string;
+  title: string;
+  status: TodoStatus;
+  tags?: { name: string; color: string }[];
+  dueDate?: Date;
+  assignees?: User[];
+  commentsCount?: number;
+  attachmentsCount?: number;
+}
+
+export interface PollOption {
+  id: string;
+  text: string;
+  votes: number;
+  voterIds?: string[];
+}
+
+export interface Poll {
+  id: string;
+  question: string;
+  options: PollOption[];
+  createdBy: User;
+  creationDate: Date;
+  votedBy: string[]; // Array of user IDs who have voted
 }

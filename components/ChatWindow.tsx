@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Conversation, User } from '../types';
 import MessageBubble from './MessageBubble';
-import { PaperAirplaneIcon, PaperClipIcon, SpinnerIcon } from './icons';
+import { PaperAirplaneIcon, PaperClipIcon, SpinnerIcon, ChevronLeftIcon } from './icons';
 import AvatarWithStatus from './AvatarWithStatus';
 
 interface ChatWindowProps {
   conversation: Conversation;
   currentUser: User;
   onSendMessage: (conversationId: string, text: string) => Promise<void>;
+  onBack: () => void;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUser, onSendMessage }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUser, onSendMessage, onBack }) => {
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -53,6 +54,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUser, onSe
     <div className="flex flex-col h-full">
       {/* Chat Header */}
       <div className="flex items-center p-3 border-b border-gray-200">
+        <button onClick={onBack} className="md:hidden mr-2 p-2 rounded-full hover:bg-gray-100">
+            <ChevronLeftIcon className="w-6 h-6 text-gray-600" />
+        </button>
         {/* Campus Buzz: Avatar for the active chat window header */}
         <AvatarWithStatus avatarUrl={avatarUrl} alt={title} status={status} size="md" />
         <div className="ml-3">

@@ -8,7 +8,7 @@ interface ChatPageProps {
   conversations: Conversation[];
   currentUser: User;
   activeConversationId: string | null;
-  onSelectConversation: (conversationId: string) => void;
+  onSelectConversation: (conversationId: string | null) => void;
   onSendMessage: (conversationId: string, text: string) => Promise<void>;
   onOpenNewMessageModal: () => void;
 }
@@ -43,10 +43,10 @@ const ChatPage: React.FC<ChatPageProps> = ({ conversations, currentUser, activeC
   });
 
   return (
-    <div className="container mx-auto mt-8 h-[calc(100vh-10rem)]">
-      <div className="flex h-full bg-white rounded-lg shadow-xl overflow-hidden">
+    <div className="container mx-auto mt-0 md:mt-8 h-[calc(100vh-5rem)] md:h-[calc(100vh-10rem)]">
+      <div className="flex h-full bg-white rounded-none md:rounded-lg shadow-none md:shadow-xl overflow-hidden">
         {/* Conversation List */}
-        <aside className="w-full md:w-1/3 lg:w-1/4 border-r border-gray-200 flex flex-col">
+        <aside className={`w-full md:w-1/3 lg:w-1/4 border-r border-gray-200 flex flex-col ${activeConversationId ? 'hidden md:flex' : 'flex'}`}>
            <div className="p-4 border-b">
                <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-bold text-gray-800">Messages</h2>
@@ -79,12 +79,13 @@ const ChatPage: React.FC<ChatPageProps> = ({ conversations, currentUser, activeC
         </aside>
 
         {/* Chat Window */}
-        <main className="hidden md:flex flex-1 flex-col">
+        <main className={`flex-1 flex-col ${activeConversationId ? 'flex' : 'hidden md:flex'}`}>
             {activeConversation ? (
                 <ChatWindow
                     conversation={activeConversation}
                     currentUser={currentUser}
                     onSendMessage={onSendMessage}
+                    onBack={() => onSelectConversation(null)}
                 />
             ) : (
                 <div className="flex-grow flex items-center justify-center text-gray-500">

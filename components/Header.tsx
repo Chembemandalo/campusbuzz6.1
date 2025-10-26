@@ -14,7 +14,10 @@ import {
     NewspaperIcon,
     BuildingStorefrontIcon,
     UserPlusIcon,
-    UserGroupIcon
+    UserGroupIcon,
+    XMarkIcon,
+    ArrowRightOnRectangleIcon,
+    Cog6ToothIcon
 } from './icons';
 
 interface HeaderProps {
@@ -57,35 +60,33 @@ const Header: React.FC<HeaderProps> = ({
   onLogout,
   currentPage
 }) => {
-  const [isCommunityOpen, setCommunityOpen] = useState(false);
   const [isNotificationsOpen, setNotificationsOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
-  const communityRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (communityRef.current && !communityRef.current.contains(event.target as Node)) {
-      setCommunityOpen(false);
-    }
-    if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
-      setNotificationsOpen(false);
-    }
-    if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
-      setProfileOpen(false);
-    }
-  };
-
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) setNotificationsOpen(false);
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) setProfileOpen(false);
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => { document.body.style.overflow = 'auto'; }
+  }, [isMobileMenuOpen]);
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -94,6 +95,7 @@ const Header: React.FC<HeaderProps> = ({
   };
   
   const handleNavClick = (page: Page, user?: User) => {
+    setMobileMenuOpen(false);
     if (isAuthenticated) {
         onNavigate(page, user);
     } else {
@@ -106,66 +108,122 @@ const Header: React.FC<HeaderProps> = ({
     onNotificationClick(notification);
   };
 
+  const MobileMenu = () => (
+    <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
+        {/* Overlay */}
+        <div className="fixed inset-0 bg-black/30 animate-fade-in-opacity" onClick={() => setMobileMenuOpen(false)} aria-hidden="true"></div>
+        
+        {/* Menu Panel */}
+        <div className="fixed top-0 bottom-0 left-0 w-4/5 max-w-sm bg-white p-4 flex flex-col shadow-xl animate-slide-in-left">
+            <div className="flex justify-between items-center mb-6">
+                <div className="flex-shrink-0 flex items-center space-x-3 cursor-pointer" onClick={() => handleNavClick('home')}>
+                    <div className="w-9 h-9 bg-white rounded-lg shadow-md flex items-center justify-center p-1">
+                        <div className="grid grid-cols-2 gap-0.5">
+                            <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span>
+                            <span className="w-2.5 h-2.5 bg-gray-700 rounded-full"></span>
+                            <span className="w-2.5 h-2.5 bg-gray-700 rounded-full"></span>
+                            <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span>
+                        </div>
+                    </div>
+                    <span className="font-bold text-xl text-gray-800 tracking-wider">Campus Buzz</span>
+                </div>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-gray-500"><XMarkIcon className="w-7 h-7"/></button>
+            </div>
+            
+            <nav className="flex flex-col space-y-2 flex-grow overflow-y-auto">
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Home</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Community</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Blog</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Marketplace</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Jobs</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Mentors</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Library</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('events'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Events</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('contact'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Contact Us</a>
+            </nav>
+            
+            <div className="mt-auto pt-4 border-t">
+                {isAuthenticated && currentUser ? (
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => handleNavClick('profile', currentUser)}>
+                            <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-12 h-12 rounded-full" />
+                            <div>
+                                <p className="font-bold truncate">{currentUser.name}</p>
+                                <p className="text-sm text-gray-500 truncate">{currentUser.role}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <button onClick={() => handleNavClick('settings')} className="p-3 hover:bg-gray-100 rounded-full text-gray-500"><Cog6ToothIcon /></button>
+                            <button onClick={() => { setMobileMenuOpen(false); onLogout(); }} className="p-3 hover:bg-gray-100 rounded-full text-gray-500"><ArrowRightOnRectangleIcon /></button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex items-center space-x-2">
+                        <button onClick={() => { setMobileMenuOpen(false); onLogin(); }} className="flex-1 font-semibold text-gray-700 hover:bg-gray-100 transition-colors py-3 px-4 rounded-lg">Sign in</button>
+                        <button onClick={() => { setMobileMenuOpen(false); onLogin(); }} className="flex-1 bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Get Started</button>
+                    </div>
+                )}
+            </div>
+        </div>
+    </div>
+  );
+
   return (
-    <header className="bg-gradient-to-r from-indigo-700 to-purple-800 text-white shadow-lg sticky top-0 z-50">
+    <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          {/* Campus Buzz: Logo Text */}
-          <div className="flex-shrink-0 flex items-center">
-            <span className="font-bold text-2xl tracking-wider cursor-pointer" onClick={() => onNavigate('home')}>CAMPUS BUZZ</span>
+          {/* Campus Buzz: Logo */}
+          <div className="flex-shrink-0 flex items-center space-x-3 cursor-pointer" onClick={() => onNavigate('home')}>
+            <div className="w-9 h-9 bg-white rounded-lg shadow-md flex items-center justify-center p-1">
+                <div className="grid grid-cols-2 gap-0.5">
+                    <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span>
+                    <span className="w-2.5 h-2.5 bg-gray-700 rounded-full"></span>
+                    <span className="w-2.5 h-2.5 bg-gray-700 rounded-full"></span>
+                    <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span>
+                </div>
+            </div>
+            <span className="hidden sm:block font-bold text-xl text-gray-800 tracking-wider">Campus Buzz</span>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="hover:text-yellow-300 transition-colors">Home</a>
-            <div className="relative" ref={communityRef}>
-              <button onClick={() => setCommunityOpen(!isCommunityOpen)} className="flex items-center hover:text-yellow-300 transition-colors">
-                Community <ChevronDownIcon className="ml-1 w-4 h-4" />
-              </button>
-              {isCommunityOpen && (
-                <div className="absolute mt-2 w-48 bg-white text-gray-800 rounded-md shadow-xl py-1 z-20">
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('newsfeed'); setCommunityOpen(false); }} className="block px-4 py-2 text-sm hover:bg-gray-100">NewsFeed</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('profile', currentUser); setCommunityOpen(false); }} className="block px-4 py-2 text-sm hover:bg-gray-100">Profile Timeline</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('gallery'); setCommunityOpen(false); }} className="block px-4 py-2 text-sm hover:bg-gray-100">Gallery</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('events'); setCommunityOpen(false); }} className="block px-4 py-2 text-sm hover:bg-gray-100">Events Calendar</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('groups'); setCommunityOpen(false); }} className="block px-4 py-2 text-sm hover:bg-gray-100">Groups</a>
-                </div>
-              )}
-            </div>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="hover:text-yellow-300 transition-colors">Blog</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="hover:text-yellow-300 transition-colors">Marketplace</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="hover:text-yellow-300 transition-colors">Jobs</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="hover:text-yellow-300 transition-colors">Mentors</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('contact'); }} className="hover:text-yellow-300 transition-colors">Contact Us</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Home</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Community</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Blog</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Marketplace</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Jobs</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Mentors</a>
+            {isAuthenticated && <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Library</a>}
+            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('contact'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Contact Us</a>
           </nav>
 
           {/* Right side icons and user */}
           {isAuthenticated && currentUser ? (
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="relative">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="relative hidden lg:block">
                 <input 
                   type="text" 
-                  placeholder="Search posts..." 
-                  className="bg-white bg-opacity-20 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                  placeholder="Search..." 
+                  className="bg-gray-100 rounded-full py-2 pl-10 pr-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
                 />
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
-              <button className="relative p-2 hover:bg-white/20 rounded-full">
-                  <CartIcon className="w-6 h-6"/>
+              <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full lg:hidden">
+                  <SearchIcon className="w-6 h-6"/>
               </button>
 
-              <button onClick={() => handleNavClick('chat')} className="relative p-2 hover:bg-white/20 rounded-full">
+              <button onClick={() => handleNavClick('chat')} className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full">
                   <ChatBubbleLeftRightIcon className="w-6 h-6"/>
-                  {totalUnreadMessages > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-red-500 text-xs flex items-center justify-center">{totalUnreadMessages}</span>}
+                  {totalUnreadMessages > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-red-500 text-xs flex items-center justify-center text-white">{totalUnreadMessages}</span>}
               </button>
 
-              <div className="relative" ref={notificationsRef}>
-                  <button onClick={() => setNotificationsOpen(!isNotificationsOpen)} className="relative p-2 hover:bg-white/20 rounded-full">
+              <div className="relative hidden md:block" ref={notificationsRef}>
+                  <button onClick={() => setNotificationsOpen(!isNotificationsOpen)} className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full">
                       <BellIcon className="w-6 h-6" />
-                      {unreadCount > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-red-500 text-xs flex items-center justify-center">{unreadCount}</span>}
+                      {unreadCount > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-red-500 text-xs flex items-center justify-center text-white">{unreadCount}</span>}
                   </button>
                   {isNotificationsOpen && (
                       <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl overflow-hidden z-20">
@@ -216,10 +274,9 @@ const Header: React.FC<HeaderProps> = ({
                   )}
               </div>
                 
-              <div className="relative" ref={profileRef}>
-                <button onClick={() => setProfileOpen(!isProfileOpen)} className="flex items-center space-x-2 cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-700 focus:ring-white">
-                  {/* Campus Buzz: Current user's avatar in the header */}
-                  <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-10 h-10 rounded-full border-2 border-white" />
+              <div className="relative hidden md:block" ref={profileRef}>
+                <button onClick={() => setProfileOpen(!isProfileOpen)} className="flex items-center space-x-2 cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-indigo-500">
+                  <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-10 h-10 rounded-full border-2 border-gray-300" />
                 </button>
                 {isProfileOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-md shadow-xl py-1 z-20">
@@ -238,19 +295,20 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           ) : (
             <div className="hidden md:flex items-center space-x-4">
-              <button onClick={onLogin} className="hover:text-yellow-300 transition-colors font-semibold">Login</button>
-              <button onClick={onLogin} className="bg-white text-indigo-700 font-bold py-2 px-4 rounded-full hover:bg-yellow-300 transition-colors">Sign Up</button>
+              <button onClick={onLogin} className="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">Sign in</button>
+              <button onClick={onLogin} className="bg-indigo-600 text-white font-bold py-2 px-4 rounded-full hover:bg-indigo-700 transition-colors">Get Started</button>
             </div>
           )}
           
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button className="p-2 rounded-md hover:bg-white/20">
+            <button onClick={() => setMobileMenuOpen(true)} className="p-2 text-gray-500 rounded-md hover:bg-gray-100">
               <MenuIcon className="w-6 h-6" />
             </button>
           </div>
         </div>
       </div>
+      {isMobileMenuOpen && <MobileMenu />}
     </header>
   );
 };

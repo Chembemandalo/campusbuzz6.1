@@ -1,5 +1,5 @@
 import React, { useState, useMemo, ChangeEvent } from 'react';
-import { User, Post, Article, Event, MarketplaceItem, HeroSlide, Job } from '../types';
+import { User, Post, Article, Event, MarketplaceItem, HeroSlide, Job, LibraryResource } from '../types';
 import { 
     UsersIcon, 
     PencilSquareIcon as ContentIcon, 
@@ -11,6 +11,8 @@ import {
     ArrowTrendingUpIcon,
     PlusIcon,
     ArrowRightIcon,
+    MenuIcon,
+    BookOpenIcon,
 } from '../components/icons';
 
 interface AdminDashboardPageProps {
@@ -22,6 +24,7 @@ interface AdminDashboardPageProps {
   allListings: MarketplaceItem[];
   allJobs: Job[];
   heroSlides: HeroSlide[];
+  allLibraryResources: LibraryResource[];
   onUpdateUser: (userId: string, updates: Partial<Pick<User, 'role' | 'status'>>) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onAdminCreatePost: (content: string) => Promise<void>;
@@ -34,12 +37,16 @@ interface AdminDashboardPageProps {
   onUpdateHeroSlide: (slideIndex: number, updatedSlide: HeroSlide) => Promise<void>;
   onAddHeroSlide: (slide: HeroSlide) => Promise<void>;
   onDeleteHeroSlide: (slideIndex: number) => Promise<void>;
+  onCreateLibraryResource: (data: Omit<LibraryResource, 'id' | 'publishedDate'>) => Promise<void>;
+  onUpdateLibraryResource: (id: string, data: Partial<LibraryResource>) => Promise<void>;
+  onDeleteLibraryResource: (id: string) => Promise<void>;
 }
 
-type AdminTab = 'stats' | 'users' | 'content' | 'listings' | 'posts' | 'jobs';
+type AdminTab = 'stats' | 'users' | 'content' | 'listings' | 'posts' | 'jobs' | 'library';
 
 const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const renderContent = () => {
     switch(activeTab) {
@@ -53,6 +60,8 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
         return <PostManagementTab {...props} />;
       case 'jobs':
         return <JobManagementTab {...props} />;
+      case 'library':
+        return <LibraryManagementTab {...props} />;
       case 'stats':
       default:
         return <StatisticsTab {...props} setActiveTab={setActiveTab} />;
@@ -61,11 +70,16 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
 
   const DashboardHeader = () => (
     <div className="flex justify-between items-center mb-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Welcome back, {props.currentUser.name}. Here's what's happening.</p>
-      </div>
-      <div className="flex space-x-2">
+        <div className="flex items-center space-x-4">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-md bg-white border border-gray-200">
+                <MenuIcon className="w-6 h-6 text-gray-600"/>
+            </button>
+            <div>
+                <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+                <p className="text-gray-500 mt-1">Welcome back, {props.currentUser.name}.</p>
+            </div>
+        </div>
+      <div className="hidden sm:flex space-x-2">
         <button className="bg-white text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 text-sm">Import Data</button>
         <button onClick={() => {
             if (activeTab === 'posts') {
@@ -77,29 +91,37 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
       </div>
     </div>
   );
+  
+  const SidebarNav = () => (
+     <nav className="space-y-2">
+        <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Menu</p>
+        <TabButton icon={ChartBarIcon} label="Dashboard" isActive={activeTab === 'stats'} onClick={() => { setActiveTab('stats'); setSidebarOpen(false); }} />
+        <TabButton icon={UsersIcon} label="Users" isActive={activeTab === 'users'} onClick={() => { setActiveTab('users'); setSidebarOpen(false); }} />
+        <TabButton icon={NewspaperIcon} label="Posts" isActive={activeTab === 'posts'} onClick={() => { setActiveTab('posts'); setSidebarOpen(false); }} />
+        <p className="px-4 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
+        <TabButton icon={ContentIcon} label="Content" isActive={activeTab === 'content'} onClick={() => { setActiveTab('content'); setSidebarOpen(false); }} />
+        <TabButton icon={BuildingStorefrontIcon} label="Listings" isActive={activeTab === 'listings'} onClick={() => { setActiveTab('listings'); setSidebarOpen(false); }} />
+        <TabButton icon={BriefcaseIcon} label="Jobs" isActive={activeTab === 'jobs'} onClick={() => { setActiveTab('jobs'); setSidebarOpen(false); }} />
+        <TabButton icon={BookOpenIcon} label="Library" isActive={activeTab === 'library'} onClick={() => { setActiveTab('library'); setSidebarOpen(false); }} />
+    </nav>
+  );
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      <div className="flex">
+      <div className="lg:flex">
+        {/* Sidebar Overlay for mobile */}
+        {isSidebarOpen && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
+        
         {/* Sidebar */}
-        <aside className="w-64 bg-white p-4 border-r border-gray-200 min-h-screen">
+        <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-white p-4 border-r border-gray-200 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
             <div className="px-4 py-2 mb-8">
                 <h2 className="font-bold text-2xl text-gray-800 tracking-wider">CAMPUS BUZZ</h2>
             </div>
-            <nav className="space-y-2">
-                <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Menu</p>
-                <TabButton icon={ChartBarIcon} label="Dashboard" isActive={activeTab === 'stats'} onClick={() => setActiveTab('stats')} />
-                <TabButton icon={UsersIcon} label="Users" isActive={activeTab === 'users'} onClick={() => setActiveTab('users')} />
-                <TabButton icon={NewspaperIcon} label="Posts" isActive={activeTab === 'posts'} onClick={() => setActiveTab('posts')} />
-                <p className="px-4 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
-                <TabButton icon={ContentIcon} label="Content" isActive={activeTab === 'content'} onClick={() => setActiveTab('content')} />
-                <TabButton icon={BuildingStorefrontIcon} label="Listings" isActive={activeTab === 'listings'} onClick={() => setActiveTab('listings')} />
-                <TabButton icon={BriefcaseIcon} label="Jobs" isActive={activeTab === 'jobs'} onClick={() => setActiveTab('jobs')} />
-            </nav>
+            <SidebarNav />
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-4 sm:p-8">
             <DashboardHeader />
             {renderContent()}
         </main>
@@ -231,19 +253,19 @@ const UserManagementTab: React.FC<AdminDashboardPageProps> = ({ currentUser, all
         }
     };
     return (
-        <div className="bg-white border p-6 rounded-xl">
+        <div className="bg-white border p-6 rounded-xl overflow-x-auto">
             <SectionTitle title="Manage Users" />
-            <div className="space-y-2">
+            <div className="min-w-full space-y-2">
                 {allUsers.map(user => (
-                    <div key={user.id} className={`flex items-center justify-between p-3 rounded-lg transition-colors ${user.status === 'suspended' ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
-                        <div className="flex items-center">
+                    <div key={user.id} className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg transition-colors ${user.status === 'suspended' ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
+                        <div className="flex items-center mb-4 sm:mb-0">
                             <img className="h-10 w-10 rounded-full" src={user.avatarUrl} alt={user.name} />
                             <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">{user.name}</div>
                                 <div className="text-sm text-gray-500">{user.major}</div>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-2 sm:space-x-6 w-full sm:w-auto">
                             <div className="w-32">
                                 {currentUser.id === user.id ? (
                                     <span className="text-sm text-gray-600">{user.role}</span>
@@ -369,7 +391,7 @@ const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
     const [newSlide, setNewSlide] = useState<HeroSlide>({ category: '', title: '', description: '', imageUrl: '' });
     const handlePostAnnouncement = async () => { if (!announcement.trim()) return; await onAdminCreatePost(announcement); setAnnouncement(''); };
     const handleAddNewSlide = async () => { if (!newSlide.category || !newSlide.title) return; await onAddHeroSlide(newSlide); setNewSlide({ category: '', title: '', description: '', imageUrl: '' }); };
-    const handleDeleteSlide = (index: number) => { if (window.confirm('...')) { onDeleteHeroSlide(index); }};
+    const handleDeleteSlide = (index: number) => { if (window.confirm('Are you sure you want to delete this banner post?')) { onDeleteHeroSlide(index); }};
     const handleEditSlide = (index: number) => { setEditingSlideIndex(index); setEditingSlideData(heroSlides[index]); };
     const handleSaveSlide = async () => { if (editingSlideIndex === null || !editingSlideData) return; await onUpdateHeroSlide(editingSlideIndex, editingSlideData); setEditingSlideIndex(null); setEditingSlideData(null); };
 
@@ -434,5 +456,97 @@ const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
     );
 };
 
+const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryResources, onCreateLibraryResource, onUpdateLibraryResource, onDeleteLibraryResource }) => {
+    const [isEditing, setIsEditing] = useState<LibraryResource | null>(null);
+    const [isCreating, setIsCreating] = useState(false);
+    const [formData, setFormData] = useState<Omit<LibraryResource, 'id' | 'publishedDate'>>({
+        title: '', author: '', category: 'Computer Science', type: 'Book', fileUrl: '', description: '', coverImageUrl: ''
+    });
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        if (isEditing) {
+            setIsEditing(prev => prev ? { ...prev, [name]: value } : null);
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const handleSave = async () => {
+        if (isEditing) {
+            await onUpdateLibraryResource(isEditing.id, isEditing);
+            setIsEditing(null);
+        } else {
+            await onCreateLibraryResource(formData);
+            setFormData({ title: '', author: '', category: 'Computer Science', type: 'Book', fileUrl: '', description: '', coverImageUrl: '' });
+            setIsCreating(false);
+        }
+    };
+    
+    const FormFields = ({ data, handler }: { data: any, handler: any }) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="text" name="title" placeholder="Title" value={data.title} onChange={handler} className="w-full text-sm p-2 border rounded" required />
+            <input type="text" name="author" placeholder="Author(s)" value={data.author} onChange={handler} className="w-full text-sm p-2 border rounded" required />
+            <select name="type" value={data.type} onChange={handler} className="w-full text-sm p-2 border rounded bg-white">
+                <option>Book</option>
+                <option>Journal</option>
+                <option>Paper</option>
+            </select>
+            <input type="text" name="category" placeholder="Category" value={data.category} onChange={handler} className="w-full text-sm p-2 border rounded" />
+            <input type="text" name="fileUrl" placeholder="File URL" value={data.fileUrl} onChange={handler} className="w-full text-sm p-2 border rounded col-span-1 md:col-span-2" required />
+            <input type="text" name="coverImageUrl" placeholder="Cover Image URL (Optional)" value={data.coverImageUrl} onChange={handler} className="w-full text-sm p-2 border rounded col-span-1 md:col-span-2" />
+            <textarea name="description" placeholder="Description" value={data.description} onChange={handler} className="w-full text-sm p-2 border rounded col-span-1 md:col-span-2" rows={3}></textarea>
+        </div>
+    );
+
+    return (
+         <div className="bg-white border p-6 rounded-xl">
+            <SectionTitle title="Manage Library Resources" />
+
+            {!isCreating && <button onClick={() => setIsCreating(true)} className="mb-4 bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 text-sm flex items-center space-x-2"><PlusIcon className="w-4 h-4" /><span>Add New Resource</span></button>}
+            
+            {isCreating && (
+                 <div className="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
+                    <h4 className="font-semibold mb-2 text-gray-800">New Resource</h4>
+                    <FormFields data={formData} handler={handleInputChange} />
+                    <div className="flex justify-end space-x-2 mt-2">
+                        <button onClick={() => setIsCreating(false)} className="bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded-md">Cancel</button>
+                        <button onClick={handleSave} className="bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-md">Save</button>
+                    </div>
+                </div>
+            )}
+
+            <div className="space-y-2">
+                {allLibraryResources.map(item => (
+                    <div key={item.id} className="p-3 rounded-lg hover:bg-gray-50">
+                        {isEditing?.id === item.id ? (
+                            <div>
+                                <FormFields data={isEditing} handler={handleInputChange} />
+                                <div className="flex justify-end space-x-2 mt-2">
+                                    <button onClick={() => setIsEditing(null)} className="bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded-md">Cancel</button>
+                                    <button onClick={handleSave} className="bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-md">Save Changes</button>
+                                </div>
+                            </div>
+                        ) : (
+                             <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <img className="h-12 w-10 rounded-sm object-cover" src={item.coverImageUrl || 'https://via.placeholder.com/40x48'} alt={item.title} />
+                                    <div className="ml-4">
+                                        <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                                        <div className="text-sm text-gray-500">{item.author} - <span className="font-semibold">{item.type}</span></div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <button onClick={() => setIsEditing(item)} className="text-sm text-indigo-600 hover:text-indigo-900 font-semibold">Edit</button>
+                                    <button onClick={() => onDeleteLibraryResource(item.id)} className="text-red-600 hover:text-red-900 p-1 rounded-full"><TrashIcon className="w-4 h-4"/></button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 export default AdminDashboardPage;

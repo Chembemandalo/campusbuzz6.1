@@ -10,6 +10,11 @@ interface LostAndFoundPageProps {
 
 const LostAndFoundPage: React.FC<LostAndFoundPageProps> = ({ items, onOpenCreateModal }) => {
     const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
+    const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
+
+    const handleToggleExpand = (itemId: string) => {
+        setExpandedItemId(prevId => (prevId === itemId ? null : itemId));
+    };
 
     const activeItems = useMemo(() => {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -52,7 +57,12 @@ const LostAndFoundPage: React.FC<LostAndFoundPageProps> = ({ items, onOpenCreate
                 {filteredItems.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {filteredItems.map(item => (
-                            <LostAndFoundItemCard key={item.id} item={item} />
+                            <LostAndFoundItemCard 
+                                key={item.id} 
+                                item={item}
+                                isExpanded={expandedItemId === item.id}
+                                onToggleExpand={() => handleToggleExpand(item.id)}
+                            />
                         ))}
                     </div>
                 ) : (
