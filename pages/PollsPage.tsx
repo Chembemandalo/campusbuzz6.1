@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Poll, User } from '../types';
 import PollCard from '../components/PollCard';
 import { PlusIcon } from '../components/icons';
@@ -11,6 +11,12 @@ interface PollsPageProps {
 }
 
 const PollsPage: React.FC<PollsPageProps> = ({ polls, currentUser, onVote, onOpenCreatePollModal }) => {
+  const [expandedPollId, setExpandedPollId] = useState<string | null>(null);
+
+  const handleToggleExpand = (pollId: string) => {
+    setExpandedPollId(prevId => (prevId === pollId ? null : pollId));
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
       <div className="container mx-auto px-4">
@@ -26,7 +32,14 @@ const PollsPage: React.FC<PollsPageProps> = ({ polls, currentUser, onVote, onOpe
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {polls.map(poll => (
-            <PollCard key={poll.id} poll={poll} currentUser={currentUser} onVote={onVote} />
+            <PollCard 
+              key={poll.id} 
+              poll={poll} 
+              currentUser={currentUser} 
+              onVote={onVote} 
+              isExpanded={expandedPollId === poll.id}
+              onToggleExpand={() => handleToggleExpand(poll.id)}
+            />
           ))}
         </div>
       </div>

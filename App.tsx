@@ -298,17 +298,30 @@ const App: React.FC = () => {
   }, [currentUser]);
   
   const handleRsvp = useCallback(async (eventId: string) => {
-    if(!currentUser) return;
+    if (!currentUser) return;
     await delay(500);
-    setEvents(events.map(e => {
+
+    setEvents(prevEvents => {
+      const eventToUpdate = prevEvents.find(e => e.id === eventId);
+      if (!eventToUpdate) return prevEvents;
+
+      const isAttending = eventToUpdate.attendees.includes(currentUser.id);
+      
+      if (!isAttending) {
+        showToast(`You are now going to "${eventToUpdate.title}"!`, 'event');
+      }
+
+      return prevEvents.map(e => {
         if (e.id === eventId) {
-            const isAttending = e.attendees.includes(currentUser.id);
-            const newAttendees = isAttending ? e.attendees.filter(id => id !== currentUser.id) : [...e.attendees, currentUser.id];
-            return { ...e, attendees: newAttendees };
+          const newAttendees = isAttending
+            ? e.attendees.filter(id => id !== currentUser.id)
+            : [...e.attendees, currentUser.id];
+          return { ...e, attendees: newAttendees };
         }
         return e;
-    }));
-  }, [events, currentUser]);
+      });
+    });
+  }, [currentUser]);
 
   const handleMarkAllNotificationsRead = useCallback(() => { setNotifications(notifications.map(n => ({ ...n, isRead: true }))); }, [notifications]);
 
@@ -522,7 +535,11 @@ const App: React.FC = () => {
         return {
           ...poll,
           options: poll.options.map(option =>
-            option.id === optionId ? { ...option, votes: option.votes + 1 } : option
+            option.id === optionId ? {
+                ...option,
+                votes: option.votes + 1,
+                voterIds: [...(option.voterIds || []), currentUser.id] 
+            } : option
           ),
           votedBy: [...poll.votedBy, currentUser.id],
         };
@@ -544,6 +561,13 @@ const App: React.FC = () => {
     };
     setPolls(prev => [newPoll, ...prev]);
   }, [currentUser]);
+
+  const handleDeletePoll = async (pollId: string) => {
+    if (window.confirm("Are you sure you want to delete this poll?")) {
+        await delay(500);
+        setPolls(prev => prev.filter(p => p.id !== pollId));
+    }
+  };
 
   const handleUpdateProfile = useCallback(async (updatedData: Partial<User>) => { if (!currentUser) return; await delay(500); const updatedUser = { ...currentUser, ...updatedData }; setCurrentUser(updatedUser); setUsers(prev => prev.map(u => u.id === currentUser.id ? updatedUser : u)); setEditProfileModalOpen(false); showToast('Profile updated successfully!'); }, [currentUser]);
   const handleSaveScheduleItem = useCallback(async (item: Omit<ScheduleItem, 'id'>, id?: string) => { await delay(500); if (id) { setSchedule(prev => prev.map(s => s.id === id ? { ...s, ...item } : s)); } else { const newId = `s${Date.now()}`; setSchedule(prev => [...prev, { id: newId, ...item }]); } setScheduleModalOpen(false); }, []);
@@ -575,7 +599,7 @@ const App: React.FC = () => {
       case 'singleArticle': if (!viewingArticle) { handleNavigate('blog'); return null; } return <SingleArticlePage article={viewingArticle} currentUser={currentUser!} onNavigate={handleNavigate} onEditArticle={(article) => { setEditingArticle(article); setEditArticleModalOpen(true); }} onDeleteArticle={handleDeleteArticle} onAddComment={handleAddArticleComment} onReactToArticle={handleReactToArticle} />;
       case 'groups': return <GroupsPage groups={groups} currentUser={currentUser!} onJoinGroup={async (id) => setGroups(prev => prev.map(g => g.id === id ? { ...g, members: [...g.members, currentUser!.id] } : g))} onLeaveGroup={async (id) => setGroups(prev => prev.map(g => g.id === id ? { ...g, members: g.members.filter(mId => mId !== currentUser!.id) } : g))} />;
       case 'settings': return <SettingsPage currentUser={currentUser!} onUpdateSettings={handleUpdateSettings} />;
-      case 'admin': return <AdminDashboardPage currentUser={currentUser!} allUsers={users} allPosts={posts} allArticles={articles} allEvents={events} allListings={marketplaceItems} allJobs={jobs} heroSlides={heroSlides} onUpdateUser={handleUpdateUser} onDeleteUser={handleDeleteUser} onAdminCreatePost={(content) => handleCreatePost(content, null)} onDeletePost={async (id) => setPosts(prev => prev.filter(p => p.id !== id))} onDeleteArticle={async (id) => setArticles(prev => prev.filter(a => a.id !== id))} onDeleteEvent={async (id) => setEvents(prev => prev.filter(e => e.id !== id))} onDeleteListing={async (id) => setMarketplaceItems(prev => prev.filter(i => i.id !== id))} onDeleteJob={async (id) => setJobs(prev => prev.filter(j => j.id !== id))} onOpenCreateJobModal={() => setCreateJobModalOpen(true)} onUpdateHeroSlide={handleUpdateHeroSlide} onAddHeroSlide={handleAddHeroSlide} onDeleteHeroSlide={handleDeleteHeroSlide} allLibraryResources={libraryResources} onCreateLibraryResource={handleCreateLibraryResource} onUpdateLibraryResource={handleUpdateLibraryResource} onDeleteLibraryResource={handleDeleteLibraryResource} />;
+      case 'admin': return <AdminDashboardPage currentUser={currentUser!} allUsers={users} allPosts={posts} allArticles={articles} allEvents={events} allListings={marketplaceItems} allJobs={jobs} heroSlides={heroSlides} onUpdateUser={handleUpdateUser} onDeleteUser={handleDeleteUser} onAdminCreatePost={(content) => handleCreatePost(content, null)} onDeletePost={async (id) => setPosts(prev => prev.filter(p => p.id !== id))} onDeleteArticle={async (id) => setArticles(prev => prev.filter(a => a.id !== id))} onDeleteEvent={async (id) => setEvents(prev => prev.filter(e => e.id !== id))} onDeleteListing={async (id) => setMarketplaceItems(prev => prev.filter(i => i.id !== id))} onDeleteJob={async (id) => setJobs(prev => prev.filter(j => j.id !== id))} onOpenCreateJobModal={() => setCreateJobModalOpen(true)} onUpdateHeroSlide={handleUpdateHeroSlide} onAddHeroSlide={handleAddHeroSlide} onDeleteHeroSlide={handleDeleteHeroSlide} allLibraryResources={libraryResources} onCreateLibraryResource={handleCreateLibraryResource} onUpdateLibraryResource={handleUpdateLibraryResource} onDeleteLibraryResource={handleDeleteLibraryResource} allPolls={polls} onDeletePoll={handleDeletePoll} onOpenCreatePollModal={() => setCreatePollModalOpen(true)} />;
       case 'classes': return <ClassesPage schedule={schedule} onOpenModal={(item) => { setEditingScheduleItem(item); setScheduleModalOpen(true); }} />;
       case 'jobs': return <JobsPage jobs={jobs} currentUser={currentUser!} />;
       case 'mentor-dashboard': return <MentorDashboardPage currentUser={currentUser!} requests={mentorshipRequests} groups={groups} allUsers={users} onAccept={handleAcceptMentorshipRequest} onDecline={handleDeclineMentorshipRequest} onCreateCommunity={handleCreateMentorCommunity} onUpdateSettings={handleUpdateMentorSettings} onRemoveMentee={handleRemoveMentee} onUpdateCommunity={handleUpdateCommunity} onNavigate={handleNavigate} />;

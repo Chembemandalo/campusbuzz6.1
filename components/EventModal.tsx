@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Event, User } from '../types';
-import { CalendarDaysIcon, ClockIcon, UserGroupIcon, SpinnerIcon } from './icons';
+import { CalendarDaysIcon, ClockIcon, UserGroupIcon, SpinnerIcon, SuccessCheckIcon } from './icons';
 
 interface EventModalProps {
   event: Event | null;
@@ -12,6 +12,13 @@ interface EventModalProps {
 
 const EventModal: React.FC<EventModalProps> = ({ event, isOpen, currentUser, onClose, onRsvp }) => {
   const [isRsvping, setIsRsvping] = useState(false);
+  const [isRsvpSuccess, setIsRsvpSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+        setIsRsvpSuccess(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen || !event) {
     return null;
@@ -20,10 +27,15 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, currentUser, onC
   const isAttending = event.attendees.includes(currentUser.id);
 
   const handleRsvpClick = async () => {
-    if(isRsvping) return;
+    if(isRsvping || isRsvpSuccess) return;
+    const wasAttending = isAttending;
     setIsRsvping(true);
     await onRsvp(event.id);
     setIsRsvping(false);
+    if (!wasAttending) {
+        setIsRsvpSuccess(true);
+        setTimeout(() => setIsRsvpSuccess(false), 2000);
+    }
   };
 
   const formatDateRange = (start: Date, end: Date) => {
@@ -63,12 +75,12 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, currentUser, onC
         <div className="p-6 bg-gray-50 rounded-b-lg flex justify-end">
           <button
             onClick={handleRsvpClick}
-            disabled={isRsvping}
+            disabled={isRsvping || isRsvpSuccess}
             className={`px-6 py-3 rounded-lg font-bold text-white transition-colors w-full sm:w-auto flex justify-center items-center ${
-                isAttending && !isRsvping ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700'
-            } disabled:bg-gray-400`}
+                isRsvpSuccess ? 'bg-green-600' : (isAttending && !isRsvping ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700')
+            } disabled:bg-gray-400 disabled:cursor-not-allowed`}
           >
-            {isRsvping ? <SpinnerIcon /> : (isAttending ? '✓ Attending' : 'RSVP Now')}
+            {isRsvping ? <SpinnerIcon /> : isRsvpSuccess ? <SuccessCheckIcon className="w-6 h-6 text-white" /> : (isAttending ? '✓ Attending' : 'RSVP Now')}
           </button>
         </div>
       </div>

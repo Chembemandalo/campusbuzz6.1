@@ -469,3 +469,17 @@ export const InformationCircleIcon: React.FC<IconProps> = ({ className }) => (
       <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
     </svg>
 );
+
+export const SuccessCheckIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className || 'w-8 h-8'} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <circle
+            className="animate-checkmark-circle"
+            cx="16" cy="16" r="15"
+            fill="none" stroke="currentColor" strokeWidth="2"
+        />
+        <path
+            className="animate-checkmark-tick"
+            fill="none" stroke="currentColor" strokeWidth="3" d="M9 16l5 5 9-9"
+        />
+    </svg>
+);

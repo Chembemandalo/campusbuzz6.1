@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Event, User } from '../types';
-import { CalendarDaysIcon, ClockIcon, UsersIcon, MapPinIcon, UserIcon, SpinnerIcon } from './icons';
+import { CalendarDaysIcon, ClockIcon, UsersIcon, MapPinIcon, UserIcon, SpinnerIcon, SuccessCheckIcon } from './icons';
 
 interface EventCardProps {
   event: Event;
@@ -12,14 +12,20 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({ event, isExpanded, onToggleExpand, onRsvp, currentUser }) => {
   const [isRsvping, setIsRsvping] = useState(false);
+  const [isRsvpSuccess, setIsRsvpSuccess] = useState(false);
   const isAttending = event.attendees.includes(currentUser.id);
 
   const handleRsvpClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if(isRsvping) return;
+    if (isRsvping || isRsvpSuccess) return;
+    const wasAttending = isAttending;
     setIsRsvping(true);
     await onRsvp(event.id);
     setIsRsvping(false);
+    if (!wasAttending) {
+        setIsRsvpSuccess(true);
+        setTimeout(() => setIsRsvpSuccess(false), 2000);
+    }
   };
 
   const formatDate = (date: Date) => date.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
@@ -70,12 +76,12 @@ const EventCard: React.FC<EventCardProps> = ({ event, isExpanded, onToggleExpand
             <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">{event.description}</p>
             <button
                 onClick={handleRsvpClick}
-                disabled={isRsvping}
+                disabled={isRsvping || isRsvpSuccess}
                 className={`mt-4 w-full px-6 py-3 rounded-lg font-bold text-white transition-colors flex justify-center items-center ${
-                    isAttending && !isRsvping ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700'
-                } disabled:bg-gray-400`}
+                    isRsvpSuccess ? 'bg-green-600' : (isAttending && !isRsvping ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700')
+                } disabled:bg-gray-400 disabled:cursor-not-allowed`}
             >
-                {isRsvping ? <SpinnerIcon /> : (isAttending ? '✓ Going' : 'I\'m Going')}
+                {isRsvping ? <SpinnerIcon /> : isRsvpSuccess ? <SuccessCheckIcon className="w-6 h-6 text-white"/> : (isAttending ? '✓ Going' : 'I\'m Going')}
             </button>
           </div>
         </div>

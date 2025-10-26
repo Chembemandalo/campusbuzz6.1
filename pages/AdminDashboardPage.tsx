@@ -1,5 +1,5 @@
 import React, { useState, useMemo, ChangeEvent } from 'react';
-import { User, Post, Article, Event, MarketplaceItem, HeroSlide, Job, LibraryResource } from '../types';
+import { User, Post, Article, Event, MarketplaceItem, HeroSlide, Job, LibraryResource, Poll } from '../types';
 import { 
     UsersIcon, 
     PencilSquareIcon as ContentIcon, 
@@ -13,6 +13,7 @@ import {
     ArrowRightIcon,
     MenuIcon,
     BookOpenIcon,
+    ClipboardDocumentListIcon,
 } from '../components/icons';
 
 interface AdminDashboardPageProps {
@@ -25,6 +26,7 @@ interface AdminDashboardPageProps {
   allJobs: Job[];
   heroSlides: HeroSlide[];
   allLibraryResources: LibraryResource[];
+  allPolls: Poll[];
   onUpdateUser: (userId: string, updates: Partial<Pick<User, 'role' | 'status'>>) => Promise<void>;
   onDeleteUser: (userId: string) => Promise<void>;
   onAdminCreatePost: (content: string) => Promise<void>;
@@ -40,9 +42,11 @@ interface AdminDashboardPageProps {
   onCreateLibraryResource: (data: Omit<LibraryResource, 'id' | 'publishedDate'>) => Promise<void>;
   onUpdateLibraryResource: (id: string, data: Partial<LibraryResource>) => Promise<void>;
   onDeleteLibraryResource: (id: string) => Promise<void>;
+  onDeletePoll: (pollId: string) => Promise<void>;
+  onOpenCreatePollModal: () => void;
 }
 
-type AdminTab = 'stats' | 'users' | 'content' | 'listings' | 'posts' | 'jobs' | 'library';
+type AdminTab = 'stats' | 'users' | 'content' | 'listings' | 'posts' | 'jobs' | 'library' | 'polls';
 
 const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
@@ -60,6 +64,8 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
         return <PostManagementTab {...props} />;
       case 'jobs':
         return <JobManagementTab {...props} />;
+      case 'polls':
+        return <PollManagementTab {...props} />;
       case 'library':
         return <LibraryManagementTab {...props} />;
       case 'stats':
@@ -86,6 +92,8 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
                 // This tab has its own create post
             } else if (activeTab === 'jobs') {
                 props.onOpenCreateJobModal();
+            } else if (activeTab === 'polls') {
+                props.onOpenCreatePollModal();
             }
         }} className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 text-sm flex items-center space-x-2"><PlusIcon className="w-4 h-4" /><span>Create New</span></button>
       </div>
@@ -102,6 +110,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
         <TabButton icon={ContentIcon} label="Content" isActive={activeTab === 'content'} onClick={() => { setActiveTab('content'); setSidebarOpen(false); }} />
         <TabButton icon={BuildingStorefrontIcon} label="Listings" isActive={activeTab === 'listings'} onClick={() => { setActiveTab('listings'); setSidebarOpen(false); }} />
         <TabButton icon={BriefcaseIcon} label="Jobs" isActive={activeTab === 'jobs'} onClick={() => { setActiveTab('jobs'); setSidebarOpen(false); }} />
+        <TabButton icon={ClipboardDocumentListIcon} label="Polls & Surveys" isActive={activeTab === 'polls'} onClick={() => { setActiveTab('polls'); setSidebarOpen(false); }} />
         <TabButton icon={BookOpenIcon} label="Library" isActive={activeTab === 'library'} onClick={() => { setActiveTab('library'); setSidebarOpen(false); }} />
     </nav>
   );
@@ -455,6 +464,58 @@ const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
         </div>
     );
 };
+
+const PollManagementTab: React.FC<AdminDashboardPageProps> = ({ allPolls, onDeletePoll, onOpenCreatePollModal }) => (
+    <div className="bg-white border p-6 rounded-xl">
+        <div className="flex justify-between items-center mb-4">
+            <SectionTitle title="Manage Polls & Surveys" />
+            <button
+                onClick={onOpenCreatePollModal}
+                className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 text-sm flex items-center space-x-2"
+            >
+                <PlusIcon className="w-4 h-4" />
+                <span>Create Poll</span>
+            </button>
+        </div>
+        <div className="space-y-4">
+            {allPolls.map(poll => {
+                const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
+                return (
+                    <div key={poll.id} className="bg-gray-50 p-4 rounded-lg border">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="font-semibold text-gray-800">{poll.question}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    By {poll.createdBy.name} on {poll.creationDate.toLocaleDateString()} &bull; {totalVotes} votes
+                                </p>
+                            </div>
+                            <button onClick={() => onDeletePoll(poll.id)} className="text-red-600 hover:text-red-900 p-1 rounded-full flex-shrink-0 ml-4">
+                                <TrashIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <div className="mt-3 space-y-2 text-sm">
+                            {poll.options.map(option => {
+                                const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
+                                return (
+                                    <div key={option.id}>
+                                        <div className="flex justify-between items-center text-gray-700">
+                                            <span>{option.text}</span>
+                                            <span className="font-medium">{option.votes} ({percentage.toFixed(0)}%)</span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                            <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: `${percentage}%` }}></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    </div>
+);
+
 
 const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryResources, onCreateLibraryResource, onUpdateLibraryResource, onDeleteLibraryResource }) => {
     const [isEditing, setIsEditing] = useState<LibraryResource | null>(null);
