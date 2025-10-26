@@ -40,7 +40,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ articles, currentUser, onNavigate, 
             </div>
             
             <div className="z-10">
-                <h1 className="text-2xl md:text-4xl font-bold">Campus Buzz Blog</h1>
+                <h1 className="text-2xl md:text-4xl font-bold">Campus Buzz News</h1>
                 <p className="text-sm md:text-base text-purple-200 mt-2">Insights, stories, and news from the Rockview community.</p>
             </div>
             

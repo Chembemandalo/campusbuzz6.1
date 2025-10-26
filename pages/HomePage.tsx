@@ -173,7 +173,7 @@ const HomePage: React.FC<HomePageProps> = ({ onJoin, onNavigate }) => {
             </div>
             <div className="text-center mt-12">
                 <button onClick={() => onNavigate('blog')} className="font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
-                    Read more on our blog <span aria-hidden="true">&rarr;</span>
+                    Read more news <span aria-hidden="true">&rarr;</span>
                 </button>
             </div>
         </div>

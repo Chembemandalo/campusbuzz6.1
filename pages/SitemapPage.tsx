@@ -56,7 +56,7 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate }) => {
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Academics & Tools</h2>
             <ul className="mt-4 space-y-2">
-                <SitemapLink page="blog" label="Blog / Articles" onNavigate={onNavigate} />
+                <SitemapLink page="blog" label="News / Articles" onNavigate={onNavigate} />
                 <SitemapLink page="library" label="Digital Library" onNavigate={onNavigate} />
                 <SitemapLink page="classes" label="My Schedule" onNavigate={onNavigate} />
                 <SitemapLink page="todolist" label="My Tasks" onNavigate={onNavigate} />

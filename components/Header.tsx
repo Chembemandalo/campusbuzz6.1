@@ -99,7 +99,13 @@ const Header: React.FC<HeaderProps> = ({
     if (isAuthenticated) {
         onNavigate(page, user);
     } else {
-        onLogin();
+        // For public pages, navigate directly. For others, App.tsx handles the auth redirect.
+        const publicPages: Page[] = ['home', 'blog', 'library', 'about', 'contact'];
+        if (publicPages.includes(page)) {
+          onNavigate(page);
+        } else {
+          onLogin();
+        }
     }
   };
   
@@ -131,15 +137,28 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <nav className="flex flex-col space-y-2 flex-grow overflow-y-auto">
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Home</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Community</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Blog</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Marketplace</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Jobs</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Mentors</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Library</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('events'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Events</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('contact'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Contact Us</a>
+              {isAuthenticated ? (
+                <>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Home</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Community</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">News</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Marketplace</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Jobs</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Mentors</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Library</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('events'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Events</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">About Us</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('contact'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Contact Us</a>
+                </>
+              ) : (
+                <>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Home</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">News</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Library</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">About Us</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('contact'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Contact Us</a>
+                </>
+              )}
             </nav>
             
             <div className="mt-auto pt-4 border-t">
@@ -187,14 +206,24 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Home</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Community</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Blog</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Marketplace</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Jobs</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Mentors</a>
-            {isAuthenticated && <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Library</a>}
-            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('contact'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Contact Us</a>
+            {isAuthenticated ? (
+              <>
+                <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Home</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Community</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">News</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Marketplace</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Jobs</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('mentors'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Mentors</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Library</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('contact'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Contact Us</a>
+              </>
+            ) : (
+              <>
+                <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('blog'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">News</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('library'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Library</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('about'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">About Us</a>
+              </>
+            )}
           </nav>
 
           {/* Right side icons and user */}
