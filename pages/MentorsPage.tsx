@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { User, Article, Page, MentorshipRequest } from '../types';
 import MentorCard from '../components/MentorCard';
-import { SearchIcon, UserGroupIcon, AcademicCapIcon } from '../components/icons';
+import { SearchIcon, UserGroupIcon, AcademicCapIcon, BackButton } from '../components/icons';
 
 interface MentorsPageProps {
   allUsers: User[];
@@ -10,6 +10,7 @@ interface MentorsPageProps {
   onNavigate: (page: Page, data?: User | Article) => void;
   onSendMentorshipRequest: (mentorId: string) => void;
   onOpenBecomeMentorModal: () => void;
+  handleBack: () => void;
 }
 
 const MentorsPage: React.FC<MentorsPageProps> = ({ 
@@ -19,6 +20,7 @@ const MentorsPage: React.FC<MentorsPageProps> = ({
     onNavigate,
     onSendMentorshipRequest,
     onOpenBecomeMentorModal,
+    handleBack
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedMentorId, setExpandedMentorId] = useState<string | null>(null);
@@ -45,6 +47,7 @@ const MentorsPage: React.FC<MentorsPageProps> = ({
     <div className="bg-gray-100 min-h-screen">
       <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white pt-8">
         <div className="container mx-auto px-4">
+             <BackButton onClick={handleBack} className="mb-4 text-white hover:text-indigo-200" text="Back" />
             {/* Banner */}
              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 md:p-12 flex flex-col md:flex-row justify-between items-center relative overflow-hidden shadow-lg">
                 <div className="absolute -left-16 -bottom-16 text-white/10">

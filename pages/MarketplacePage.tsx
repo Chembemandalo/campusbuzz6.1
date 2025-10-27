@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { MarketplaceItem, User } from '../types';
 import MarketplaceItemCard from '../components/MarketplaceItemCard';
-import { BuildingStorefrontIcon } from '../components/icons';
+import { BuildingStorefrontIcon, BackButton } from '../components/icons';
 
 interface MarketplacePageProps {
   items: MarketplaceItem[];
@@ -9,11 +9,12 @@ interface MarketplacePageProps {
   onInitiateChat: (seller: User) => void;
   onUpdateListingStatus: (itemId: string, status: 'Available' | 'Sold') => Promise<void>;
   onOpenCreateListingModal: () => void;
+  handleBack: () => void;
 }
 
 const CATEGORIES = ['All', 'Textbooks', 'Electronics', 'Furniture', 'Clothing', 'Other'];
 
-const MarketplacePage: React.FC<MarketplacePageProps> = ({ items, currentUser, onInitiateChat, onUpdateListingStatus, onOpenCreateListingModal }) => {
+const MarketplacePage: React.FC<MarketplacePageProps> = ({ items, currentUser, onInitiateChat, onUpdateListingStatus, onOpenCreateListingModal, handleBack }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
@@ -46,6 +47,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ items, currentUser, o
     <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
       {/* Banner */}
       <div className="container mx-auto px-4">
+        <BackButton onClick={handleBack} className="mb-4" />
         <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-lg shadow-lg p-8 md:p-12 flex justify-between items-center relative overflow-hidden">
             <div className="absolute -left-10 -bottom-10 text-white/10">
                 <BuildingStorefrontIcon className="w-48 h-48 transform -rotate-12" />

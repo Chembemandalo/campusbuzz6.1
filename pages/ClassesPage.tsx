@@ -1,10 +1,13 @@
 import React from 'react';
 import { ScheduleItem } from '../types';
-import { PlusCircleIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { PlusCircleIcon, BackButton } from '../components/icons';
 
 interface ClassesPageProps {
   schedule: ScheduleItem[];
   onOpenModal: (item: ScheduleItem | null) => void;
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
 const DAYS: ScheduleItem['day'][] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -21,10 +24,12 @@ const timeToRow = (time: string): number => {
     return (hours - 7) * 2 + (minutes / 30) + 1;
 };
 
-const ClassesPage: React.FC<ClassesPageProps> = ({ schedule, onOpenModal }) => {
+const ClassesPage: React.FC<ClassesPageProps> = ({ schedule, onOpenModal, handleBack }) => {
   return (
     <div className="bg-gray-50 min-h-screen animate-fade-in-up">
       <div className="container mx-auto px-4 py-8">
+        {/* FIX: Add BackButton component */}
+        <BackButton onClick={handleBack} className="mb-4" />
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">My Weekly Schedule</h1>
           <button

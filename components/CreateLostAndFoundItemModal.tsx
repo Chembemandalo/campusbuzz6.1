@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import { LostAndFoundItem } from '../types';
-import { SpinnerIcon } from './icons';
+import { SpinnerIcon, PhotoIcon, XCircleIcon } from './icons';
 
 interface CreateLostAndFoundItemModalProps {
   isOpen: boolean;
@@ -13,17 +13,28 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
     const [itemName, setItemName] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-    const [imageUrl, setImageUrl] = useState('');
+    const [image, setImage] = useState<string | null>(null);
     const [contact, setContact] = useState('');
     const [location, setLocation] = useState('');
     const [isCreating, setIsCreating] = useState(false);
     
+    const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const resetForm = () => {
         setType('lost');
         setItemName('');
         setDescription('');
         setDate(new Date().toISOString().split('T')[0]);
-        setImageUrl('');
+        setImage(null);
         setContact('');
         setLocation('');
     };
@@ -44,7 +55,7 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
             itemName,
             description,
             date: new Date(date),
-            imageUrl: imageUrl || 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop',
+            imageUrl: image || 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop',
             contact,
             location,
         });
@@ -77,7 +88,27 @@ const CreateLostAndFoundItemModal: React.FC<CreateLostAndFoundItemModalProps> = 
                             <Input id="date" label={type === 'lost' ? 'Date Lost' : 'Date Found'} type="date" value={date} onChange={e => setDate(e.target.value)} required />
                             <Input id="contact" label="Contact Info" value={contact} onChange={e => setContact(e.target.value)} required placeholder="Your email or phone number" />
                         </div>
-                         <Input id="imageUrl" label="Image URL (Optional)" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." />
+                         <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Image (Optional)</label>
+                            {image ? (
+                                <div className="mt-1 relative">
+                                    <img src={image} alt="Item preview" className="w-full h-40 object-cover rounded-lg" />
+                                    <button type="button" onClick={() => setImage(null)} className="absolute top-1 right-1 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-75">
+                                        <XCircleIcon className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <label htmlFor="item-image-upload" className="cursor-pointer mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:bg-gray-50">
+                                    <div className="space-y-1 text-center">
+                                        <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
+                                        <div className="flex text-sm text-gray-600">
+                                            <span>Upload a file</span>
+                                            <input id="item-image-upload" name="item-image-upload" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" />
+                                        </div>
+                                    </div>
+                                </label>
+                            )}
+                        </div>
                     </div>
                     <div className="p-4 border-t flex justify-end">
                         <button type="submit" disabled={isCreating} className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 w-28 flex justify-center items-center disabled:bg-indigo-300">

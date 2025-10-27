@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { Event } from '../types';
-import { SpinnerIcon } from './icons';
+import { SpinnerIcon, PhotoIcon, XCircleIcon } from './icons';
 
 interface CreateEventModalProps {
   isOpen: boolean;
@@ -12,11 +12,22 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [image, setImage] = useState<string | null>(null);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImage(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isCreating || !title || !description || !startTime || !endTime || !location) return;
@@ -27,7 +38,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
         title,
         description,
         location,
-        imageUrl: imageUrl || `https://picsum.photos/seed/${title.replace(/\s+/g, '-')}/1200/600`,
+        imageUrl: image || `https://picsum.photos/seed/${title.replace(/\s+/g, '-')}/1200/600`,
         startTime,
         endTime,
     });
@@ -36,7 +47,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     // Reset form
     setTitle('');
     setDescription('');
-    setImageUrl('');
+    setImage(null);
     setLocation('');
     setStartTime('');
     setEndTime('');
@@ -75,12 +86,25 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     />
                 </div>
                  <div>
-                    <label htmlFor="event-image" className="block text-sm font-medium text-gray-700 mb-1">Image URL (Optional)</label>
-                    <input
-                        type="url" id="event-image" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="https://picsum.photos/..."
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Event Image (Optional)</label>
+                    {image ? (
+                        <div className="mt-1 relative">
+                            <img src={image} alt="Event preview" className="w-full h-40 object-cover rounded-lg" />
+                            <button type="button" onClick={() => setImage(null)} className="absolute top-1 right-1 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-75">
+                                <XCircleIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+                    ) : (
+                        <label htmlFor="event-image-upload" className="cursor-pointer mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:bg-gray-50">
+                            <div className="space-y-1 text-center">
+                                <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
+                                <div className="flex text-sm text-gray-600">
+                                    <span>Upload a file</span>
+                                    <input id="event-image-upload" name="event-image-upload" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" />
+                                </div>
+                            </div>
+                        </label>
+                    )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>

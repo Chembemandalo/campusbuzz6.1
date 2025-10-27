@@ -2,7 +2,7 @@ import React from 'react';
 import { Page } from '../types';
 import { ArrowRightIcon, AcademicCapIcon, BriefcaseIcon, ThumbtackIcon, ClockIcon, BookOpenIcon, MegaphoneIcon, SparklesIcon } from '../components/icons';
 
-interface HomePageProps {
+interface LandingPageProps {
   onJoin: () => void;
   onNavigate: (page: Page) => void;
 }
@@ -49,7 +49,7 @@ const AcademicCard: React.FC<{icon: React.FC<{className?: string}>, title: strin
     </div>
 );
 
-const HomePage: React.FC<HomePageProps> = ({ onJoin, onNavigate }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onJoin, onNavigate }) => {
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
@@ -215,4 +215,4 @@ const HomePage: React.FC<HomePageProps> = ({ onJoin, onNavigate }) => {
   );
 };
 
-export default HomePage;
+export default LandingPage;

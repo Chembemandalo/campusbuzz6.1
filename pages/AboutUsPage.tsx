@@ -1,16 +1,21 @@
 import React from 'react';
 import { Page, User } from '../types';
-import { BriefcaseIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { BriefcaseIcon, BackButton } from '../components/icons';
 
 interface AboutUsPageProps {
     onNavigate: (page: Page, data?: User) => void;
     currentUser: User;
+    // FIX: Add handleBack to props interface
+    handleBack: () => void;
 }
 
-const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate, currentUser }) => {
+const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate, currentUser, handleBack }) => {
     return (
         <div className="bg-white py-12 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
             <div className="max-w-4xl mx-auto">
+                {/* FIX: Add BackButton component */}
+                <BackButton onClick={handleBack} className="mb-8" />
                 <div className="text-center">
                     <h1 className="text-4xl font-extrabold text-gray-900">🐝 About Us – Campus Buzz</h1>
                     <p className="mt-4 text-lg text-gray-600">

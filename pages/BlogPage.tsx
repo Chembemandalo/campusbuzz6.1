@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Article, User, Page } from '../types';
 import ArticleCard from '../components/ArticleCard';
-import { RssIcon, SearchIcon, PencilSquareIcon } from '../components/icons';
+import { RssIcon, SearchIcon, PencilSquareIcon, BackButton } from '../components/icons';
 
 const ARTICLE_CATEGORIES = ['All', 'Academics', 'Student Life', 'Career', 'Technology', 'Opinion', 'Other'];
 
@@ -10,9 +10,10 @@ interface BlogPageProps {
   currentUser: User;
   onNavigate: (page: Page, data?: User | Article) => void;
   onOpenCreateArticleModal: () => void;
+  handleBack: () => void;
 }
 
-const BlogPage: React.FC<BlogPageProps> = ({ articles, currentUser, onNavigate, onOpenCreateArticleModal }) => {
+const BlogPage: React.FC<BlogPageProps> = ({ articles, currentUser, onNavigate, onOpenCreateArticleModal, handleBack }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -34,6 +35,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ articles, currentUser, onNavigate, 
     <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
        {/* Banner */}
       <div className="container mx-auto px-4">
+        <BackButton onClick={handleBack} className="mb-4" />
         <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg shadow-lg p-8 md:p-12 flex justify-center items-center relative overflow-hidden text-center">
             <div className="absolute -left-10 -bottom-10 text-white/10">
                 <RssIcon className="w-48 h-48 transform -rotate-12" />

@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Post, Event, Page, Article, User } from '../types';
 import ImageCard from '../components/ImageCard';
-import { PlusIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { PlusIcon, BackButton } from '../components/icons';
 import EditPostModal from '../components/EditPostModal'; // Re-using for viewing
 
 interface GalleryPageProps {
@@ -9,9 +10,11 @@ interface GalleryPageProps {
   events: Event[];
   onNavigate: (page: Page, data?: User | Article) => void;
   onOpenCreatePostModal: () => void;
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
-const GalleryPage: React.FC<GalleryPageProps> = ({ posts, events, onNavigate, onOpenCreatePostModal }) => {
+const GalleryPage: React.FC<GalleryPageProps> = ({ posts, events, onNavigate, onOpenCreatePostModal, handleBack }) => {
     const [view, setView] = useState<'all' | string>('all'); // 'all' or an eventId
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
@@ -35,6 +38,8 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ posts, events, onNavigate, on
         <>
         <div className="bg-white min-h-screen">
             <div className="container mx-auto px-4 py-8">
+                {/* FIX: Add BackButton component */}
+                <BackButton onClick={handleBack} className="mb-4" />
                 {/* Header */}
                 <div 
                     className="h-64 rounded-lg bg-cover bg-center flex items-center justify-center text-white p-4 mb-8"

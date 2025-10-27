@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { User, FriendRequest, Article, Page } from '../types';
 import UserCard from '../components/UserCard';
 import FriendRequestCard from '../components/FriendRequestCard';
-import { SearchIcon, UserGroupIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { SearchIcon, UserGroupIcon, BackButton } from '../components/icons';
 
 type FriendsPageTab = 'all' | 'requests' | 'find';
 
@@ -15,6 +16,8 @@ interface FriendsPageProps {
   onSendFriendRequest: (userId: string) => void;
   onAcceptFriendRequest: (requestId: string) => void;
   onDeclineFriendRequest: (requestId: string) => void;
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
 const FriendsPage: React.FC<FriendsPageProps> = ({ 
@@ -25,7 +28,8 @@ const FriendsPage: React.FC<FriendsPageProps> = ({
     onNavigate,
     onSendFriendRequest,
     onAcceptFriendRequest,
-    onDeclineFriendRequest 
+    onDeclineFriendRequest,
+    handleBack
 }) => {
   const [activeTab, setActiveTab] = useState<FriendsPageTab>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -115,11 +119,15 @@ const FriendsPage: React.FC<FriendsPageProps> = ({
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white">
-        <div className="container mx-auto px-4 py-8 md:py-12 flex items-center space-x-4">
-          <UserGroupIcon className="w-12 h-12 md:w-16 md:h-16 text-white"/>
-          <div>
-            <h1 className="text-2xl md:text-4xl font-bold">Friends</h1>
-            <p className="text-sm md:text-base">Connect with students and staff at Rockview University.</p>
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          {/* FIX: Add BackButton component */}
+          <BackButton onClick={handleBack} className="mb-4 text-white hover:text-cyan-200" />
+          <div className="flex items-center space-x-4">
+            <UserGroupIcon className="w-12 h-12 md:w-16 md:h-16 text-white"/>
+            <div>
+              <h1 className="text-2xl md:text-4xl font-bold">Friends</h1>
+              <p className="text-sm md:text-base">Connect with students and staff at Rockview University.</p>
+            </div>
           </div>
         </div>
       </div>

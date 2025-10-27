@@ -1,14 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { LostAndFoundItem } from '../types';
 import LostAndFoundItemCard from '../components/LostAndFoundItemCard';
-import { PlusIcon, SearchIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { PlusIcon, SearchIcon, BackButton } from '../components/icons';
 
 interface LostAndFoundPageProps {
   items: LostAndFoundItem[];
   onOpenCreateModal: () => void;
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
-const LostAndFoundPage: React.FC<LostAndFoundPageProps> = ({ items, onOpenCreateModal }) => {
+const LostAndFoundPage: React.FC<LostAndFoundPageProps> = ({ items, onOpenCreateModal, handleBack }) => {
     const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
     const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
@@ -29,6 +32,8 @@ const LostAndFoundPage: React.FC<LostAndFoundPageProps> = ({ items, onOpenCreate
     return (
         <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
             <div className="container mx-auto px-4">
+                {/* FIX: Add BackButton component */}
+                <BackButton onClick={handleBack} className="mb-4" />
                 <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg shadow-lg p-8 md:p-12 flex justify-center items-center relative overflow-hidden text-center">
                     <div className="absolute -left-10 -bottom-10 text-white/10">
                         <SearchIcon className="w-48 h-48 transform -rotate-12" />

@@ -403,6 +403,22 @@ const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
     const handleDeleteSlide = (index: number) => { if (window.confirm('Are you sure you want to delete this banner post?')) { onDeleteHeroSlide(index); }};
     const handleEditSlide = (index: number) => { setEditingSlideIndex(index); setEditingSlideData(heroSlides[index]); };
     const handleSaveSlide = async () => { if (editingSlideIndex === null || !editingSlideData) return; await onUpdateHeroSlide(editingSlideIndex, editingSlideData); setEditingSlideIndex(null); setEditingSlideData(null); };
+    
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'new' | 'edit') => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                if (type === 'new') {
+                    setNewSlide(prev => ({ ...prev, imageUrl: result }));
+                } else if (type === 'edit' && editingSlideData) {
+                    setEditingSlideData(prev => prev ? ({ ...prev, imageUrl: result }) : null);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -424,7 +440,11 @@ const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
                         <input type="text" placeholder="Category (e.g., Breaking News)" value={newSlide.category} onChange={(e) => setNewSlide({ ...newSlide, category: e.target.value })} className="w-full text-sm p-2 border rounded" />
                         <input type="text" placeholder="Title" value={newSlide.title} onChange={(e) => setNewSlide({ ...newSlide, title: e.target.value })} className="w-full text-sm p-2 border rounded font-semibold" />
                         <textarea placeholder="Description" value={newSlide.description} onChange={(e) => setNewSlide({ ...newSlide, description: e.target.value })} className="w-full text-sm p-2 border rounded" rows={2} />
-                        <input type="text" placeholder="Image URL (e.g., https://...)" value={newSlide.imageUrl} onChange={(e) => setNewSlide({ ...newSlide, imageUrl: e.target.value })} className="w-full text-sm p-2 border rounded" />
+                        <div>
+                            <label className="text-xs">Image</label>
+                            <input type="file" onChange={(e) => handleImageUpload(e, 'new')} accept="image/*" className="w-full text-sm p-1 border rounded bg-white" />
+                            {newSlide.imageUrl && <img src={newSlide.imageUrl} alt="New slide preview" className="w-32 h-16 object-cover mt-2 rounded"/>}
+                        </div>
                         <div className="flex justify-end">
                             <button onClick={handleAddNewSlide} className="bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-md hover:bg-blue-700">Add to Banner</button>
                         </div>
@@ -438,7 +458,11 @@ const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
                                  <input type="text" placeholder="Category" value={editingSlideData.category} onChange={(e) => setEditingSlideData({ ...editingSlideData, category: e.target.value })} className="w-full text-sm p-1 border rounded" />
                                  <input type="text" placeholder="Title" value={editingSlideData.title} onChange={(e) => setEditingSlideData({ ...editingSlideData, title: e.target.value })} className="w-full text-sm p-1 border rounded font-semibold" />
                                  <textarea placeholder="Description" value={editingSlideData.description} onChange={(e) => setEditingSlideData({ ...editingSlideData, description: e.target.value })} className="w-full text-sm p-1 border rounded" rows={2} />
-                                 <input type="text" placeholder="Image URL" value={editingSlideData.imageUrl} onChange={(e) => setEditingSlideData({ ...editingSlideData, imageUrl: e.target.value })} className="w-full text-sm p-1 border rounded" />
+                                 <div>
+                                    <label className="text-xs">Image</label>
+                                    <input type="file" onChange={(e) => handleImageUpload(e, 'edit')} accept="image/*" className="w-full text-sm p-1 border rounded bg-white" />
+                                    {editingSlideData.imageUrl && <img src={editingSlideData.imageUrl} alt="Edit slide preview" className="w-32 h-16 object-cover mt-2 rounded"/>}
+                                </div>
                                  <div className="flex justify-end space-x-2 mt-2">
                                      <button onClick={() => setEditingSlideIndex(null)} className="bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded-md">Cancel</button>
                                      <button onClick={handleSaveSlide} className="bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-md">Save</button>
@@ -532,6 +556,22 @@ const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryRes
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
+    
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                if (isEditing) {
+                    setIsEditing(prev => prev ? { ...prev, coverImageUrl: result } : null);
+                } else {
+                    setFormData(prev => ({ ...prev, coverImageUrl: result }));
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSave = async () => {
         if (isEditing) {
@@ -544,7 +584,7 @@ const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryRes
         }
     };
     
-    const FormFields = ({ data, handler }: { data: any, handler: any }) => (
+    const FormFields = ({ data, handler, fileHandler }: { data: any, handler: any, fileHandler: any }) => (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input type="text" name="title" placeholder="Title" value={data.title} onChange={handler} className="w-full text-sm p-2 border rounded" required />
             <input type="text" name="author" placeholder="Author(s)" value={data.author} onChange={handler} className="w-full text-sm p-2 border rounded" required />
@@ -555,7 +595,11 @@ const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryRes
             </select>
             <input type="text" name="category" placeholder="Category" value={data.category} onChange={handler} className="w-full text-sm p-2 border rounded" />
             <input type="text" name="fileUrl" placeholder="File URL" value={data.fileUrl} onChange={handler} className="w-full text-sm p-2 border rounded col-span-1 md:col-span-2" required />
-            <input type="text" name="coverImageUrl" placeholder="Cover Image URL (Optional)" value={data.coverImageUrl} onChange={handler} className="w-full text-sm p-2 border rounded col-span-1 md:col-span-2" />
+            <div className="col-span-1 md:col-span-2">
+                <label className="text-xs">Cover Image</label>
+                <input type="file" name="coverImageUrl" onChange={fileHandler} className="w-full text-sm p-1 border rounded bg-white" accept="image/*"/>
+                {data.coverImageUrl && <img src={data.coverImageUrl} alt="Cover" className="w-20 h-28 object-cover mt-2 rounded" />}
+            </div>
             <textarea name="description" placeholder="Description" value={data.description} onChange={handler} className="w-full text-sm p-2 border rounded col-span-1 md:col-span-2" rows={3}></textarea>
         </div>
     );
@@ -569,7 +613,7 @@ const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryRes
             {isCreating && (
                  <div className="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
                     <h4 className="font-semibold mb-2 text-gray-800">New Resource</h4>
-                    <FormFields data={formData} handler={handleInputChange} />
+                    <FormFields data={formData} handler={handleInputChange} fileHandler={handleFileChange} />
                     <div className="flex justify-end space-x-2 mt-2">
                         <button onClick={() => setIsCreating(false)} className="bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded-md">Cancel</button>
                         <button onClick={handleSave} className="bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-md">Save</button>
@@ -582,7 +626,7 @@ const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryRes
                     <div key={item.id} className="p-3 rounded-lg hover:bg-gray-50">
                         {isEditing?.id === item.id ? (
                             <div>
-                                <FormFields data={isEditing} handler={handleInputChange} />
+                                <FormFields data={isEditing} handler={handleInputChange} fileHandler={handleFileChange} />
                                 <div className="flex justify-end space-x-2 mt-2">
                                     <button onClick={() => setIsEditing(null)} className="bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded-md">Cancel</button>
                                     <button onClick={handleSave} className="bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-md">Save Changes</button>
@@ -591,7 +635,7 @@ const LibraryManagementTab: React.FC<AdminDashboardPageProps> = ({ allLibraryRes
                         ) : (
                              <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                    <img className="h-12 w-10 rounded-sm object-cover" src={item.coverImageUrl || 'https://via.placeholder.com/40x48'} alt={item.title} />
+                                    <img className="h-12 w-10 rounded-sm object-cover bg-gray-100" src={item.coverImageUrl || undefined} alt={item.title} />
                                     <div className="ml-4">
                                         <div className="text-sm font-medium text-gray-900">{item.title}</div>
                                         <div className="text-sm text-gray-500">{item.author} - <span className="font-semibold">{item.type}</span></div>

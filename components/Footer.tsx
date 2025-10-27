@@ -24,7 +24,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                         <h4 className="font-semibold text-gray-800 mb-4">Quick Links</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
                             <li><a href="#" onClick={(e) => {e.preventDefault(); onNavigate('jobs')}} className="hover:text-indigo-600">Job Opportunities</a></li>
-                            <li><a href="#" onClick={(e) => {e.preventDefault(); onNavigate('community')}} className="hover:text-indigo-600">Campus Updates</a></li>
+                            {/* FIX: Changed onNavigate('community') to onNavigate('home') as 'community' is not a valid Page type. */}
+                            <li><a href="#" onClick={(e) => {e.preventDefault(); onNavigate('home')}} className="hover:text-indigo-600">Campus Updates</a></li>
                             <li><a href="#" onClick={(e) => {e.preventDefault(); onNavigate('blog')}} className="hover:text-indigo-600">Prep Hub</a></li>
                             <li><a href="#" onClick={(e) => {e.preventDefault(); onNavigate('mentors')}} className="hover:text-indigo-600">Find a Mentor</a></li>
                             <li><a href="#" onClick={(e) => {e.preventDefault(); onNavigate('events')}} className="hover:text-indigo-600">Competitions</a></li>

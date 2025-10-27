@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Poll, User } from '../types';
 import PollCard from '../components/PollCard';
-import { PlusIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { PlusIcon, BackButton } from '../components/icons';
 
 interface PollsPageProps {
   polls: Poll[];
   currentUser: User;
   onVote: (pollId: string, optionId: string) => void;
   onOpenCreatePollModal: () => void;
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
-const PollsPage: React.FC<PollsPageProps> = ({ polls, currentUser, onVote, onOpenCreatePollModal }) => {
+const PollsPage: React.FC<PollsPageProps> = ({ polls, currentUser, onVote, onOpenCreatePollModal, handleBack }) => {
   const [expandedPollId, setExpandedPollId] = useState<string | null>(null);
 
   const handleToggleExpand = (pollId: string) => {
@@ -20,6 +23,8 @@ const PollsPage: React.FC<PollsPageProps> = ({ polls, currentUser, onVote, onOpe
   return (
     <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
       <div className="container mx-auto px-4">
+        {/* FIX: Add BackButton component */}
+        <BackButton onClick={handleBack} className="mb-4" />
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Polls & Surveys</h1>
           <button

@@ -483,3 +483,13 @@ export const SuccessCheckIcon: React.FC<IconProps> = ({ className }) => (
         />
     </svg>
 );
+
+export const BackButton: React.FC<{ onClick: () => void; text?: string; className?: string; }> = ({ onClick, text = 'Back', className }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center space-x-1 text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors ${className}`}
+  >
+    <ChevronLeftIcon className="w-5 h-5" />
+    <span>{text}</span>
+  </button>
+);

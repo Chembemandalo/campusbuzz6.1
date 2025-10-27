@@ -62,7 +62,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ currentUser, onNavigate, curr
                 <div>
                     <h3 className="px-2.5 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">General</h3>
                     <ul className="space-y-1">
-                        <SidebarLink icon={UsersIcon} label="Community" onClick={() => onNavigate('community')} isActive={currentPage === 'community'} />
+                        <SidebarLink icon={HomeIcon} label="Home Feed" onClick={() => onNavigate('home')} isActive={currentPage === 'home'} />
                         <SidebarLink icon={ListBulletIcon} label="My Tasks" onClick={() => onNavigate('classes')} isActive={currentPage === 'classes'} />
                         <SidebarLink icon={ChatBubbleOvalLeftEllipsisIcon} label="Inbox" onClick={() => onNavigate('chat')} isActive={currentPage === 'chat'} />
                         <SidebarLink icon={QuestionMarkCircleIcon} label="Lost and Found" onClick={() => onNavigate('lostandfound')} isActive={currentPage === 'lostandfound'} />

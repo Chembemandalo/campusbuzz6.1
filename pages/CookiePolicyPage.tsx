@@ -1,9 +1,18 @@
 import React from 'react';
+// FIX: Add BackButton to imports
+import { BackButton } from '../components/icons';
 
-const CookiePolicyPage: React.FC = () => {
+// FIX: Add props interface
+interface CookiePolicyPageProps {
+  handleBack: () => void;
+}
+
+const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ handleBack }) => {
   return (
     <div className="bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
+        {/* FIX: Add BackButton component */}
+        <BackButton onClick={handleBack} className="mb-8" />
         <h1 className="text-3xl font-extrabold text-gray-900 text-center">Cookie Policy</h1>
         <p className="mt-2 text-center text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
 

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { Article } from '../types';
-import { SpinnerIcon } from './icons';
+import { SpinnerIcon, PhotoIcon, XCircleIcon } from './icons';
 
 const ARTICLE_CATEGORIES = ['Academics', 'Student Life', 'Career', 'Technology', 'Opinion', 'Other'];
 
@@ -14,14 +14,25 @@ const CreateArticleModal: React.FC<CreateArticleModalProps> = ({ isOpen, onClose
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(ARTICLE_CATEGORIES[0]);
-  const [imageUrl, setImageUrl] = useState('');
+  const [image, setImage] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [statusToSubmit, setStatusToSubmit] = useState<'published' | 'draft' | null>(null);
+
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImage(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    }
+  };
 
   const resetForm = () => {
     setTitle('');
     setContent('');
-    setImageUrl('');
+    setImage(null);
     setCategory(ARTICLE_CATEGORIES[0]);
   };
 
@@ -41,7 +52,7 @@ const CreateArticleModal: React.FC<CreateArticleModalProps> = ({ isOpen, onClose
         content,
         category,
         status,
-        imageUrl: imageUrl || undefined,
+        imageUrl: image || undefined,
     });
     
     setIsCreating(false);
@@ -74,9 +85,25 @@ const CreateArticleModal: React.FC<CreateArticleModalProps> = ({ isOpen, onClose
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="article-image" className="block text-sm font-medium text-gray-700 mb-1">Header Image URL (Optional)</label>
-                        <input type="url" id="article-image" placeholder="https://example.com/image.jpg" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Header Image (Optional)</label>
+                        {image ? (
+                            <div className="mt-1 relative">
+                                <img src={image} alt="Article preview" className="w-full h-24 object-cover rounded-lg" />
+                                <button type="button" onClick={() => setImage(null)} className="absolute top-1 right-1 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-75">
+                                    <XCircleIcon className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <label htmlFor="article-image-upload" className="cursor-pointer mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md h-24 hover:bg-gray-50">
+                                <div className="space-y-1 text-center">
+                                    <PhotoIcon className="mx-auto h-8 w-8 text-gray-400" />
+                                    <div className="flex text-xs text-gray-600">
+                                        <span>Upload a file</span>
+                                        <input id="article-image-upload" name="article-image-upload" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" />
+                                    </div>
+                                </div>
+                            </label>
+                        )}
                     </div>
                 </div>
                 <div>

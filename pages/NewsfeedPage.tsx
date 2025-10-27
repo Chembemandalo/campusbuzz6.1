@@ -6,7 +6,7 @@ import { SearchIcon, ClockIcon, BookOpenIcon, ArrowRightIcon, ListBulletIcon } f
 import Timetable from '../components/Timetable';
 import HeroSlider from '../components/HeroSlider';
 
-interface CommunityPageProps {
+interface HomePageProps {
   currentUser: User;
   posts: PostType[];
   allPosts: PostType[];
@@ -23,7 +23,7 @@ interface CommunityPageProps {
   onOpenCreatePostModal: () => void;
 }
 
-const CommunityPage: React.FC<CommunityPageProps> = ({ 
+const HomePage: React.FC<HomePageProps> = ({ 
     currentUser, 
     posts,
     allPosts,
@@ -162,4 +162,4 @@ const CommunityPage: React.FC<CommunityPageProps> = ({
   );
 };
 
-export default CommunityPage;
+export default HomePage;

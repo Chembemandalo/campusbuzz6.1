@@ -139,8 +139,6 @@ const Header: React.FC<HeaderProps> = ({
             <nav className="flex flex-col space-y-2 flex-grow overflow-y-auto">
               {isAuthenticated ? (
                 <>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Home</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Community</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">News</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Marketplace</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Jobs</a>
@@ -152,7 +150,6 @@ const Header: React.FC<HeaderProps> = ({
                 </>
               ) : (
                 <>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Home</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">News</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('library'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">Library</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-gray-700 font-medium hover:bg-gray-100 p-3 rounded-lg text-lg">About Us</a>
@@ -208,8 +205,6 @@ const Header: React.FC<HeaderProps> = ({
           <nav className="hidden md:flex items-center space-x-8">
             {isAuthenticated ? (
               <>
-                <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Home</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('community'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Community</a>
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('blog'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">News</a>
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('marketplace'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Marketplace</a>
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('jobs'); }} className="text-gray-600 font-medium hover:text-indigo-600 transition-colors">Jobs</a>

@@ -13,6 +13,7 @@ import {
     BriefcaseIcon,
     CalendarDaysIcon,
     CameraIcon,
+    BackButton,
 } from '../components/icons';
 
 type ProfileTab = 'posts' | 'about' | 'friends' | 'photos';
@@ -35,6 +36,7 @@ interface ProfilePageProps {
   onInitiateChat: (user: User) => void;
   onOpenEditProfileModal: () => void;
   onOpenCreateJobModal: () => void;
+  handleBack: () => void;
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = (props) => {
@@ -42,7 +44,7 @@ const ProfilePage: React.FC<ProfilePageProps> = (props) => {
     user, posts, currentUser, allUsers, groups, sentFriendRequests,
     onNavigate, onEditPost, onAddComment, onHashtagClick, onCreatePost,
     onSendFriendRequest, onCancelFriendRequest, onUnfriend, onInitiateChat,
-    onOpenEditProfileModal, onOpenCreateJobModal
+    onOpenEditProfileModal, onOpenCreateJobModal, handleBack
   } = props;
   
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
@@ -142,6 +144,9 @@ const ProfilePage: React.FC<ProfilePageProps> = (props) => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
+       <div className="container mx-auto max-w-5xl px-4 pt-4">
+            <BackButton onClick={handleBack} />
+        </div>
       <div className="bg-white shadow-sm">
         <div className="container mx-auto max-w-5xl">
           {/* Cover Photo */}

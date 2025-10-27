@@ -2,16 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { Event as EventType, User } from '../types';
 import Calendar from '../components/Calendar';
 import EventCard from '../components/EventCard';
-import { CalendarDaysIcon, MegaphoneIcon } from '../components/icons';
+import { CalendarDaysIcon, MegaphoneIcon, BackButton } from '../components/icons';
 
 interface EventsPageProps {
   events: EventType[];
   currentUser: User;
   onRsvp: (eventId: string) => Promise<void>;
   onOpenCreateEventModal: () => void;
+  handleBack: () => void;
 }
 
-const EventsPage: React.FC<EventsPageProps> = ({ events, currentUser, onRsvp, onOpenCreateEventModal }) => {
+const EventsPage: React.FC<EventsPageProps> = ({ events, currentUser, onRsvp, onOpenCreateEventModal, handleBack }) => {
   const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
@@ -43,6 +44,7 @@ const EventsPage: React.FC<EventsPageProps> = ({ events, currentUser, onRsvp, on
     <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
       {/* Banner */}
       <div className="container mx-auto px-4">
+        <BackButton onClick={handleBack} className="mb-4" />
         <div className="bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-lg shadow-lg p-8 md:p-12 flex justify-center items-center relative overflow-hidden text-center">
             <div className="absolute -left-10 -bottom-10 text-white/10">
                 <CalendarDaysIcon className="w-48 h-48 transform -rotate-12" />

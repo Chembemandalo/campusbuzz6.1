@@ -8,6 +8,7 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   ShareIcon,
   EyeIcon,
+  BackButton,
 } from '../components/icons';
 
 interface SingleArticlePageProps {
@@ -18,6 +19,7 @@ interface SingleArticlePageProps {
   onDeleteArticle: (articleId: string) => Promise<void>;
   onAddComment: (articleId: string, commentText: string) => Promise<void>;
   onReactToArticle: (articleId: string, reaction: ReactionType) => Promise<void>;
+  handleBack: () => void;
 }
 
 const ReactionImageMap: Partial<Record<ReactionType, string>> = {
@@ -39,7 +41,7 @@ const ReactionColorMap: Record<ReactionType, string> = {
   angry: 'text-red-500',
 };
 
-const SingleArticlePage: React.FC<SingleArticlePageProps> = ({ article, currentUser, onNavigate, onEditArticle, onDeleteArticle, onAddComment, onReactToArticle }) => {
+const SingleArticlePage: React.FC<SingleArticlePageProps> = ({ article, currentUser, onNavigate, onEditArticle, onDeleteArticle, onAddComment, onReactToArticle, handleBack }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isCommenting, setIsCommenting] = useState(false);
@@ -112,9 +114,7 @@ const SingleArticlePage: React.FC<SingleArticlePageProps> = ({ article, currentU
     <div className="bg-white min-h-screen">
       <div className="container mx-auto max-w-4xl py-8 px-4">
         {/* Back navigation */}
-        <button onClick={() => onNavigate('blog')} className="text-sm font-semibold text-indigo-600 hover:underline mb-4">
-          &larr; Back to all articles
-        </button>
+        <BackButton onClick={handleBack} text="Back to articles" className="mb-4" />
 
         {/* Article Header */}
         <div className="mb-6">

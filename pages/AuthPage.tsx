@@ -42,7 +42,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onSignUp, onBack, onNaviga
   const handleSuccess = () => {
     setIsFadingOut(true);
     setTimeout(() => {
-      onNavigate('community');
+      onNavigate('home');
     }, 500); // Duration of the fade-out animation
   };
 

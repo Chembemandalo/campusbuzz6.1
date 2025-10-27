@@ -1,18 +1,21 @@
 import React, { useState, useMemo } from 'react';
 import { Job, User } from '../types';
 import JobCard from '../components/JobCard';
-import { BriefcaseIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { BriefcaseIcon, BackButton } from '../components/icons';
 import JobApplicationModal from '../components/JobApplicationModal';
 
 interface JobsPageProps {
   jobs: Job[];
   currentUser: User;
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
 type JobFilter = 'All' | 'Job' | 'Internship';
 type SortKey = 'newest' | 'oldest';
 
-const JobsPage: React.FC<JobsPageProps> = ({ jobs, currentUser }) => {
+const JobsPage: React.FC<JobsPageProps> = ({ jobs, currentUser, handleBack }) => {
     const [activeFilter, setActiveFilter] = useState<JobFilter>('All');
     const [sortKey, setSortKey] = useState<SortKey>('newest');
     const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
@@ -75,6 +78,8 @@ const JobsPage: React.FC<JobsPageProps> = ({ jobs, currentUser }) => {
         <>
             <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
                 <div className="container mx-auto px-4">
+                    {/* FIX: Add BackButton component */}
+                    <BackButton onClick={handleBack} className="mb-4" />
                     {/* Banner */}
                     <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg p-8 md:p-12 flex justify-center items-center relative overflow-hidden text-center shadow-lg">
                         <div className="absolute -left-16 -bottom-16 text-white/10">

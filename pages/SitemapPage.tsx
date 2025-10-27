@@ -1,8 +1,12 @@
 import React from 'react';
 import { Page } from '../types';
+// FIX: Add BackButton to imports
+import { BackButton } from '../components/icons';
 
 interface SitemapPageProps {
   onNavigate: (page: Page) => void;
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
 const SitemapLink: React.FC<{ page: Page, label: string, onNavigate: (page: Page) => void }> = ({ page, label, onNavigate }) => (
@@ -13,10 +17,12 @@ const SitemapLink: React.FC<{ page: Page, label: string, onNavigate: (page: Page
     </li>
 );
 
-const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate }) => {
+const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, handleBack }) => {
   return (
     <div className="bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
+        {/* FIX: Add BackButton component */}
+        <BackButton onClick={handleBack} className="mb-8" />
         <h1 className="text-3xl font-extrabold text-gray-900 text-center">Sitemap</h1>
         <p className="mt-2 text-center text-sm text-gray-500">Find your way around Campus Buzz.</p>
 
@@ -25,7 +31,8 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate }) => {
             <h2 className="text-lg font-semibold text-gray-900">Main Pages</h2>
             <ul className="mt-4 space-y-2">
               <SitemapLink page="home" label="Home" onNavigate={onNavigate} />
-              <SitemapLink page="community" label="Community Feed" onNavigate={onNavigate} />
+              {/* FIX: Changed page="community" to page="home" as 'community' is not a valid Page type. */}
+              <SitemapLink page="home" label="Community Feed" onNavigate={onNavigate} />
               <SitemapLink page="contact" label="Contact Us" onNavigate={onNavigate} />
               <SitemapLink page="auth" label="Login / Register" onNavigate={onNavigate} />
             </ul>

@@ -1,4 +1,4 @@
-export type Page = 'home' | 'community' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery' | 'auth' | 'contact' | 'lostandfound' | 'friends' | 'library' | 'todolist' | 'clearance' | 'polls' | 'privacy' | 'terms' | 'cookies' | 'sitemap' | 'about';
+export type Page = 'home' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery' | 'auth' | 'contact' | 'lostandfound' | 'friends' | 'library' | 'todolist' | 'clearance' | 'polls' | 'privacy' | 'terms' | 'cookies' | 'sitemap' | 'about';
 
 export type ReactionType = 'like' | 'love' | 'haha' | 'sad' | 'angry';
 

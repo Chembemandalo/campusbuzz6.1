@@ -1,15 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { LibraryResource } from '../types';
 import LibraryResourceCard from '../components/LibraryResourceCard';
-import { BookOpenIcon, SearchIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { BookOpenIcon, SearchIcon, BackButton } from '../components/icons';
 
 interface LibraryPageProps {
   resources: LibraryResource[];
+  // FIX: Add handleBack to props interface
+  handleBack: () => void;
 }
 
 const CATEGORIES = ['All', 'Computer Science', 'Artificial Intelligence', 'Arts & Humanities', 'Science'];
 
-const LibraryPage: React.FC<LibraryPageProps> = ({ resources }) => {
+const LibraryPage: React.FC<LibraryPageProps> = ({ resources, handleBack }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [expandedResourceId, setExpandedResourceId] = useState<string | null>(null);
@@ -32,6 +35,8 @@ const LibraryPage: React.FC<LibraryPageProps> = ({ resources }) => {
     return (
         <div className="bg-gray-100 min-h-screen pt-8 animate-fade-in-up">
             <div className="container mx-auto px-4">
+                {/* FIX: Add BackButton component */}
+                <BackButton onClick={handleBack} className="mb-4" />
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg shadow-lg p-8 md:p-12 flex justify-center items-center relative overflow-hidden text-center">
                     <div className="absolute -left-10 -bottom-10 text-white/10">
                         <BookOpenIcon className="w-48 h-48 transform -rotate-12" />

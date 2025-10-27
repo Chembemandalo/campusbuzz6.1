@@ -1,9 +1,19 @@
 import React from 'react';
-import { ClockIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { ClockIcon, BackButton } from '../components/icons';
 
-const ClearancePage: React.FC = () => {
+// FIX: Add props interface
+interface ClearancePageProps {
+    handleBack: () => void;
+}
+
+const ClearancePage: React.FC<ClearancePageProps> = ({ handleBack }) => {
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[calc(100vh-200px)] bg-gray-50 text-center p-8 animate-fade-in-up">
+    <div className="relative flex flex-col items-center justify-center h-full min-h-[calc(100vh-200px)] bg-gray-50 text-center p-8 animate-fade-in-up">
+      {/* FIX: Add BackButton component */}
+      <div className="absolute top-8 left-8">
+        <BackButton onClick={handleBack} />
+      </div>
       <div className="bg-white p-12 rounded-2xl shadow-lg border border-gray-200">
         <div className="mb-6">
           <ClockIcon className="w-24 h-24 text-indigo-300 mx-auto animate-pulse" />

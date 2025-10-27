@@ -1,5 +1,6 @@
 import React from 'react';
-import { EnvelopeIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from '../components/icons';
+// FIX: Add BackButton to imports
+import { EnvelopeIcon, MapPinIcon, PhoneIcon, WhatsAppIcon, BackButton } from '../components/icons';
 import Footer from '../components/Footer';
 import { Page } from '../types';
 
@@ -39,7 +40,12 @@ const ContactInfoCard: React.FC<{
   </div>
 );
 
-const ContactPage: React.FC = () => {
+// FIX: Add handleBack to component props
+interface ContactPageProps {
+  handleBack: () => void;
+}
+
+const ContactPage: React.FC<ContactPageProps> = ({ handleBack }) => {
     // Coordinates: 15°22'44"S 28°16'44"E
     // Decimal: -15.3788, 28.2788
     const mapSrc = "https://maps.google.com/maps?q=-15.3788,28.2788&hl=es&z=14&amp;output=embed";
@@ -54,6 +60,8 @@ const ContactPage: React.FC = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-16">
+        {/* FIX: Add BackButton component */}
+        <BackButton onClick={handleBack} className="mb-8" />
         {/* Map */}
         <section className="mb-16">
             <div className="rounded-lg overflow-hidden shadow-2xl">
