@@ -80,7 +80,7 @@ export const HeartIcon: React.FC<IconProps> = ({ className }) => (
 
 export const HeartIconSolid: React.FC<IconProps> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className || 'w-6 h-6'}>
-      <path d="M11.645 20.91a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06l6.97 6.97 6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" />
+      <path d="M11.645 20.91l-9.22-9.22a5.402 5.402 0 010-7.64 5.402 5.402 0 017.64 0l1.58 1.58 1.58-1.58a5.402 5.402 0 017.64 0 5.402 5.402 0 010 7.64l-9.22 9.22a.75.75 0 01-1.06 0z" />
     </svg>
   );
 
@@ -184,7 +184,7 @@ export const ChartBarIcon: React.FC<IconProps> = ({ className }) => (
 
 export const BuildingStorefrontIcon: React.FC<IconProps> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || 'w-12 h-12'}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5A.75.75 0 0114.25 12h.01a.75.75 0 01.75.75v7.5m-4.5 0v-7.5A.75.75 0 009.75 12h-.01a.75.75 0 00-.75.75v7.5m-4.5 0v-7.5A.75.75 0 015.25 12h.01a.75.75 0 01.75.75v7.5m-4.5 0V7.5A2.25 2.25 0 015.25 5.25h13.5A2.25 2.25 0 0121 7.5v13.5m-18 0h18M12 12.75h.008v.008H12v-.008z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5A.75.75 0 0114.25 12h.01a.75.75 0 01.75.75v7.5m-4.5 0v-7.5A.75.75 0 009.75 12h-.01a.75.75 0 00-.75.75v7.5m-4.5 0V7.5A2.25 2.25 0 015.25 5.25h13.5A2.25 2.25 0 0121 7.5v13.5m-18 0h18M12 12.75h.008v.008H12v-.008z" />
     </svg>
 );
 
@@ -481,6 +481,12 @@ export const SuccessCheckIcon: React.FC<IconProps> = ({ className }) => (
             className="animate-checkmark-tick"
             fill="none" stroke="currentColor" strokeWidth="3" d="M9 16l5 5 9-9"
         />
+    </svg>
+);
+
+export const ArrowDownTrayIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || 'w-6 h-6'}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
     </svg>
 );
 

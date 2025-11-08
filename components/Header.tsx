@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { User, Notification, Article, Page } from '../types';
 import { 
     ChevronDownIcon, 
@@ -6,7 +6,7 @@ import {
     BellIcon, 
     CartIcon, 
     MenuIcon, 
-    ChatBubbleLeftRightIcon,
+    EnvelopeIcon,
     HeartIcon,
     ChatBubbleOvalLeftEllipsisIcon,
     CalendarDaysIcon,
@@ -68,7 +68,14 @@ const Header: React.FC<HeaderProps> = ({
   const notificationsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const userNotifications = useMemo(() => {
+    if (!currentUser) return [];
+    // The timestamps are strings like "15 mins ago", so proper sorting isn't feasible without parsing.
+    // New notifications are prepended in App.tsx, so the order should generally be correct.
+    return notifications.filter(n => n.recipientId === currentUser.id);
+  }, [notifications, currentUser]);
+
+  const unreadCount = userNotifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -89,8 +96,9 @@ const Header: React.FC<HeaderProps> = ({
   }, [isMobileMenuOpen]);
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      onSearch(searchTerm);
+    if (event.key === 'Enter' && searchTerm.trim()) {
+      onSearch(searchTerm.trim());
+      setSearchTerm(''); // Clear input after search
     }
   };
   
@@ -235,12 +243,12 @@ const Header: React.FC<HeaderProps> = ({
                 />
                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
-              <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full lg:hidden">
+              <button onClick={() => onNavigate('search')} className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full lg:hidden">
                   <SearchIcon className="w-6 h-6"/>
               </button>
 
               <button onClick={() => handleNavClick('chat')} className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full">
-                  <ChatBubbleLeftRightIcon className="w-6 h-6"/>
+                  <EnvelopeIcon className="w-6 h-6"/>
                   {totalUnreadMessages > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-red-500 text-xs flex items-center justify-center text-white">{totalUnreadMessages}</span>}
               </button>
 
@@ -263,8 +271,8 @@ const Header: React.FC<HeaderProps> = ({
                               )}
                           </div>
                           <div className="max-h-96 overflow-y-auto">
-                              {notifications.length > 0 ? (
-                                  notifications.map(n => {
+                              {userNotifications.length > 0 ? (
+                                  userNotifications.map(n => {
                                       const Icon = NotificationIconMap[n.type] || BellIcon;
                                       return (
                                           <div key={n.id} onClick={() => handleNotificationItemClick(n)} className={`p-3 border-b border-gray-100 flex items-start space-x-3 cursor-pointer ${!n.isRead ? 'bg-indigo-50' : 'bg-white'} hover:bg-gray-50`}>

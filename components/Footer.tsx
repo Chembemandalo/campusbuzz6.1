@@ -36,7 +36,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                     <div>
                         <h4 className="font-semibold text-gray-800 mb-4">Resources</h4>
                          <ul className="space-y-2 text-sm text-gray-600">
-                            <li><a href="#" className="hover:text-indigo-600">Alumni Network</a></li>
+                            <li><a href="#" onClick={(e) => {e.preventDefault(); onNavigate('alumni')}} className="hover:text-indigo-600">Alumni Network</a></li>
                             <li><a href="#" className="hover:text-indigo-600">Learnly Platform</a></li>
                             <li><a href="#" className="hover:text-indigo-600">Campus Ambassador</a></li>
                             <li><a href="#" className="hover:text-indigo-600">Career Guides</a></li>

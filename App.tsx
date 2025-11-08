@@ -29,6 +29,8 @@ import TermsOfServicePage from './pages/TermsOfServicePage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import SitemapPage from './pages/SitemapPage';
 import AboutUsPage from './pages/AboutUsPage';
+import AlumniNetworkPage from './pages/AlumniNetworkPage';
+import SearchResultsPage from './pages/SearchResultsPage';
 import EditPostModal from './components/EditPostModal';
 import EventModal from './components/EventModal';
 import NewMessageModal from './components/NewMessageModal';
@@ -43,6 +45,7 @@ import BecomeMentorModal from './components/BecomeMentorModal';
 import CreatePostModal from './components/CreatePostModal';
 import CreateLostAndFoundItemModal from './components/CreateLostAndFoundItemModal';
 import CreatePollModal from './components/CreatePollModal';
+import TodoEditModal from './components/TodoEditModal';
 import LoadingSpinner from './components/LoadingSpinner';
 import ToastNotification from './components/ToastNotification';
 import Footer from './components/Footer';
@@ -109,6 +112,8 @@ const App: React.FC = () => {
   const [isCreatePostModalOpen, setCreatePostModalOpen] = useState(false);
   const [isCreateLostFoundModalOpen, setCreateLostFoundModalOpen] = useState(false);
   const [isCreatePollModalOpen, setCreatePollModalOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null);
+  const [isTodoEditModalOpen, setTodoEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [toastNotification, setToastNotification] = useState<Notification | null>(null);
@@ -142,7 +147,7 @@ const App: React.FC = () => {
   }, [currentPage]);
 
   const showToast = (text: string, type: Notification['type'] = 'announcement') => {
-    setToastNotification({ id: `toast-${Date.now()}`, text, type, isRead: false, timestamp: 'Just now' });
+    setToastNotification({ id: `toast-${Date.now()}`, recipientId: currentUser?.id || '', text, type, isRead: false, timestamp: 'Just now' });
   };
 
   const handleLogin = async (email: string, password: string): Promise<{ success: boolean, message: string }> => {
@@ -226,7 +231,8 @@ const App: React.FC = () => {
         const protectedPages: Page[] = [
             'home', 'profile', 'chat', 'events', 'marketplace', 'mentors', 
             'blog', 'groups', 'singleArticle', 'settings', 'admin', 'classes', 
-            'jobs', 'mentor-dashboard', 'gallery', 'lostandfound', 'friends', 'library', 'todolist', 'clearance', 'polls', 'about'
+            'jobs', 'mentor-dashboard', 'gallery', 'lostandfound', 'friends', 
+            'library', 'todolist', 'clearance', 'polls', 'alumni', 'search'
         ];
         
         if (protectedPages.includes(targetPage) && !isAuthenticated && targetPage !== 'home') {
@@ -298,8 +304,7 @@ const App: React.FC = () => {
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-    setHashtagFilter(null);
-    handleNavigate('home');
+    handleNavigate('search');
   }, [handleNavigate]);
 
   const handleHashtagClick = useCallback((tag: string) => {
@@ -321,13 +326,27 @@ const App: React.FC = () => {
   const handleSortChange = (order: SortOrder) => { setSortOrder(order); };
   
   const handleCreatePost = useCallback(async (content: string, image: string | null) => {
-    if(!currentUser) return;
+    if (!currentUser) return;
     await delay(1000);
     const newPost: Post = {
       id: `p${Date.now()}`, author: currentUser, content, imageUrl: image || undefined, timestamp: 'Just now', creationDate: new Date(), likes: 0,
       reactions: { like: 0, love: 0, haha: 0, sad: 0, angry: 0 }, comments: [], shares: 0,
     };
     setPosts(prev => [newPost, ...prev]);
+
+    // Send notifications to friends
+    const friendNotifications: Notification[] = currentUser.friends.map(friendId => ({
+      id: `n${Date.now()}${friendId}`,
+      recipientId: friendId,
+      text: `${currentUser.name} has created a new post.`,
+      isRead: false,
+      timestamp: 'Just now',
+      type: 'post',
+      linkId: newPost.id,
+      fromUser: currentUser,
+    }));
+    
+    setNotifications(prev => [...prev, ...friendNotifications]);
   }, [currentUser]);
 
   const handleUpdatePost = useCallback(async (postId: string, newContent: string) => {
@@ -376,7 +395,14 @@ const App: React.FC = () => {
     });
   }, [currentUser]);
 
-  const handleMarkAllNotificationsRead = useCallback(() => { setNotifications(notifications.map(n => ({ ...n, isRead: true }))); }, [notifications]);
+  const handleMarkAllNotificationsRead = useCallback(() => {
+    if (!currentUser) return;
+    setNotifications(prevNotifications => 
+      prevNotifications.map(n => 
+        n.recipientId === currentUser.id ? { ...n, isRead: true } : n
+      )
+    );
+  }, [currentUser]);
 
   const handleNotificationClick = (notification: Notification) => {
     setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, isRead: true } : n));
@@ -566,17 +592,23 @@ const App: React.FC = () => {
     setLibraryResources(prev => prev.filter(res => res.id !== id));
   }, []);
 
-  const handleAddTask = useCallback(async (title: string) => { 
-    if(!currentUser) return;
-    await delay(300); 
-    const newTask: TodoItem = { 
-        id: `t${Date.now()}`, 
-        title, 
-        status: 'todo', 
-        assignees: [currentUser] 
-    }; 
-    setTodos(prev => [newTask, ...prev]); 
+  const handleAddTask = useCallback(async (title: string, dueDate?: Date) => {
+    if (!currentUser) return;
+    await delay(300);
+    const newTask: TodoItem = {
+      id: `t${Date.now()}`,
+      title,
+      status: 'todo',
+      assignees: [currentUser],
+      dueDate,
+    };
+    setTodos(prev => [newTask, ...prev]);
   }, [currentUser]);
+  const handleUpdateTodo = useCallback(async (id: string, updates: { title: string; dueDate?: Date }) => {
+    await delay(300);
+    setTodos(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+    setTodoEditModalOpen(false);
+  }, []);
   const handleUpdateTodoStatus = useCallback(async (id: string, newStatus: TodoStatus) => { await delay(300); setTodos(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t)); }, []);
   const handleDeleteTodo = useCallback(async (id: string) => { await delay(300); setTodos(prev => prev.filter(t => t.id !== id)); }, []);
   
@@ -641,12 +673,23 @@ const App: React.FC = () => {
   const totalUnreadMessages = conversations.reduce((sum, convo) => sum + convo.unreadCount, 0);
 
   const renderPage = () => {
+    if (!currentUser) {
+        if (['blog', 'library', 'about', 'contact', 'search'].includes(currentPage)) {
+            // Allow access to certain public pages
+        } else if (currentPage !== 'home' && currentPage !== 'auth') {
+            // Redirect to auth for most pages if not logged in
+            return <AuthPage onLogin={handleLogin} onSignUp={handleSignUp} onBack={handleBack} onNavigate={handleNavigate} />;
+        }
+    }
+
     switch (currentPage) {
       case 'home':
         if (isAuthenticated && currentUser) {
           return <HomePage currentUser={currentUser} posts={filteredPosts} allUsers={users} allPosts={posts} schedule={schedule} polls={polls} heroSlides={heroSlides} onNavigate={handleNavigate} onEditPost={(post) => { setEditingPost(post); setEditModalOpen(true); }} onAddComment={handleAddComment} onCreatePost={handleCreatePost} onHashtagClick={handleHashtagClick} currentPage={'home'} onOpenCreatePostModal={() => setCreatePostModalOpen(true)} />;
         }
         return <LandingPage onJoin={() => handleNavigate('auth')} onNavigate={handleNavigate} />;
+      case 'search':
+        return <SearchResultsPage initialQuery={searchQuery} allUsers={users} posts={posts} events={events} onNavigate={handleNavigate} handleBack={handleBack} currentUser={currentUser!} onEditPost={(post) => { setEditingPost(post); setEditModalOpen(true); }} onAddComment={handleAddComment} onHashtagClick={handleHashtagClick} onRsvp={handleRsvp} onSendFriendRequest={handleSendFriendRequest} sentFriendRequests={sentFriendRequests} />;
       case 'profile': return <ProfilePage user={selectedUser || currentUser!} posts={posts} currentUser={currentUser!} allUsers={users} groups={groups} sentFriendRequests={sentFriendRequests} onNavigate={handleNavigate} onEditPost={(post) => { setEditingPost(post); setEditModalOpen(true); }} onAddComment={handleAddComment} onHashtagClick={handleHashtagClick} onCreatePost={handleCreatePost} onSendFriendRequest={handleSendFriendRequest} onCancelFriendRequest={handleCancelFriendRequest} onUnfriend={handleUnfriend} onInitiateChat={handleInitiateChat} onOpenEditProfileModal={() => setEditProfileModalOpen(true)} onOpenCreateJobModal={() => setCreateJobModalOpen(true)} handleBack={handleBack} />;
       case 'chat': return <ChatPage conversations={conversations} currentUser={currentUser!} activeConversationId={activeConversationId} onSelectConversation={handleSelectConversation} onSendMessage={handleSendMessage} onOpenNewMessageModal={() => setNewMessageModalOpen(true)} />;
       case 'events': return <EventsPage events={events} currentUser={currentUser!} onRsvp={handleRsvp} onOpenCreateEventModal={() => setCreateEventModalOpen(true)} handleBack={handleBack} />;
@@ -665,7 +708,7 @@ const App: React.FC = () => {
       case 'lostandfound': return <LostAndFoundPage items={lostAndFoundItems} onOpenCreateModal={() => setCreateLostFoundModalOpen(true)} handleBack={handleBack} />;
       case 'friends': return <FriendsPage allUsers={users} currentUser={currentUser!} friendRequests={friendRequests} sentFriendRequests={sentFriendRequests} onNavigate={handleNavigate} onSendFriendRequest={handleSendFriendRequest} onAcceptFriendRequest={handleAcceptFriendRequest} onDeclineFriendRequest={handleDeclineFriendRequest} handleBack={handleBack} />;
       case 'library': return <LibraryPage resources={libraryResources} handleBack={handleBack} />;
-      case 'todolist': return <TodoListPage todos={todos} allUsers={users} onAddTask={handleAddTask} onDeleteTodo={handleDeleteTodo} onUpdateTodoStatus={handleUpdateTodoStatus} />;
+      case 'todolist': return <TodoListPage todos={todos} allUsers={users} onAddTask={handleAddTask} onDeleteTodo={handleDeleteTodo} onUpdateTodoStatus={handleUpdateTodoStatus} onEditTodo={(todo) => { setEditingTodo(todo); setTodoEditModalOpen(true); }} />;
       case 'clearance': return <ClearancePage handleBack={handleBack} />;
       case 'polls': return <PollsPage polls={polls} currentUser={currentUser!} onVote={handleVoteOnPoll} onOpenCreatePollModal={() => setCreatePollModalOpen(true)} handleBack={handleBack} />;
       case 'privacy': return <PrivacyPolicyPage handleBack={handleBack} />;
@@ -673,15 +716,18 @@ const App: React.FC = () => {
       case 'cookies': return <CookiePolicyPage handleBack={handleBack} />;
       case 'sitemap': return <SitemapPage onNavigate={handleNavigate} handleBack={handleBack} />;
       case 'about': return <AboutUsPage currentUser={currentUser!} onNavigate={handleNavigate} handleBack={handleBack} />;
+      case 'alumni': return <AlumniNetworkPage allUsers={users} onNavigate={handleNavigate} handleBack={handleBack} />;
       default: return <LandingPage onJoin={() => handleNavigate('auth')} onNavigate={handleNavigate} />;
     }
   };
 
   if (isLoading) return <LoadingSpinner fullScreen />;
   
-  if (currentPage === 'auth') {
+  if (currentPage === 'auth' && !isAuthenticated) {
     return <AuthPage onLogin={handleLogin} onSignUp={handleSignUp} onBack={handleBack} onNavigate={handleNavigate} />;
   }
+
+  const showFooter = (currentPage === 'home' && !isAuthenticated) || currentPage === 'about' || currentPage === 'contact';
 
   return (
     <div className={`theme-${theme} font-sans flex flex-col min-h-screen`}>
@@ -690,7 +736,7 @@ const App: React.FC = () => {
           {isPageLoading ? <LoadingSpinner /> : renderPage()}
         </main>
         
-        <Footer onNavigate={handleNavigate} />
+        {showFooter && <Footer onNavigate={handleNavigate} />}
 
         <EditPostModal isOpen={isEditModalOpen} post={editingPost} onClose={() => setEditModalOpen(false)} onSave={handleUpdatePost} />
         
@@ -702,6 +748,7 @@ const App: React.FC = () => {
             <CreatePostModal isOpen={isCreatePostModalOpen} onClose={() => setCreatePostModalOpen(false)} currentUser={currentUser} onCreatePost={handleCreatePost} />
             <CreateLostAndFoundItemModal isOpen={isCreateLostFoundModalOpen} onClose={() => setCreateLostFoundModalOpen(false)} onCreateItem={async (data) => { await handleCreateLostAndFoundItem(data); setCreateLostFoundModalOpen(false); }} />
             <CreatePollModal isOpen={isCreatePollModalOpen} onClose={() => setCreatePollModalOpen(false)} onCreatePoll={handleCreatePoll} />
+            <TodoEditModal isOpen={isTodoEditModalOpen} onClose={() => setTodoEditModalOpen(false)} todo={editingTodo} onSave={handleUpdateTodo} />
           </>
         )}
         

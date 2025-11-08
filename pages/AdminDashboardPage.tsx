@@ -15,6 +15,7 @@ import {
     BookOpenIcon,
     ClipboardDocumentListIcon,
 } from '../components/icons';
+import UserDetailsModal from '../components/UserDetailsModal';
 
 interface AdminDashboardPageProps {
   currentUser: User;
@@ -51,11 +52,12 @@ type AdminTab = 'stats' | 'users' | 'content' | 'listings' | 'posts' | 'jobs' | 
 const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
 
   const renderContent = () => {
     switch(activeTab) {
       case 'users':
-        return <UserManagementTab {...props} />;
+        return <UserManagementTab {...props} onViewUser={setViewingUser} />;
       case 'content':
         return <ContentModerationTab {...props} />;
       case 'listings':
@@ -135,6 +137,15 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = (props) => {
             {renderContent()}
         </main>
       </div>
+      <UserDetailsModal
+        isOpen={!!viewingUser}
+        onClose={() => setViewingUser(null)}
+        user={viewingUser}
+        allPosts={props.allPosts}
+        allArticles={props.allArticles}
+        allEvents={props.allEvents}
+        allListings={props.allListings}
+      />
     </div>
   );
 };
@@ -245,7 +256,7 @@ const StatisticsTab: React.FC<AdminDashboardPageProps & { setActiveTab: (tab: Ad
     </div>
 );
 
-const UserManagementTab: React.FC<AdminDashboardPageProps> = ({ currentUser, allUsers, onUpdateUser, onDeleteUser }) => {
+const UserManagementTab: React.FC<AdminDashboardPageProps & { onViewUser: (user: User) => void }> = ({ currentUser, allUsers, onUpdateUser, onDeleteUser, onViewUser }) => {
     // ... handler functions remain the same
     const handleRoleChange = (userId: string, e: ChangeEvent<HTMLSelectElement>) => {
         onUpdateUser(userId, { role: e.target.value as User['role'] });
@@ -267,10 +278,13 @@ const UserManagementTab: React.FC<AdminDashboardPageProps> = ({ currentUser, all
             <div className="min-w-full space-y-2">
                 {allUsers.map(user => (
                     <div key={user.id} className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg transition-colors ${user.status === 'suspended' ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
-                        <div className="flex items-center mb-4 sm:mb-0">
+                        <div 
+                            className="flex items-center mb-4 sm:mb-0 cursor-pointer group"
+                            onClick={() => onViewUser(user)}
+                        >
                             <img className="h-10 w-10 rounded-full" src={user.avatarUrl} alt={user.name} />
                             <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                <div className="text-sm font-medium text-gray-900 group-hover:text-indigo-600 transition-colors">{user.name}</div>
                                 <div className="text-sm text-gray-500">{user.major}</div>
                             </div>
                         </div>

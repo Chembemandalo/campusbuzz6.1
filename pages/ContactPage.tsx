@@ -1,7 +1,6 @@
 import React from 'react';
 // FIX: Add BackButton to imports
 import { EnvelopeIcon, MapPinIcon, PhoneIcon, WhatsAppIcon, BackButton } from '../components/icons';
-import Footer from '../components/Footer';
 import { Page } from '../types';
 
 const ContactInfoCard: React.FC<{
@@ -126,7 +125,6 @@ const ContactPage: React.FC<ContactPageProps> = ({ handleBack }) => {
             </div>
         </div>
       </div>
-       <Footer onNavigate={() => {}} />
     </div>
     );
 };

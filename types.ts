@@ -1,4 +1,4 @@
-export type Page = 'home' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery' | 'auth' | 'contact' | 'lostandfound' | 'friends' | 'library' | 'todolist' | 'clearance' | 'polls' | 'privacy' | 'terms' | 'cookies' | 'sitemap' | 'about';
+export type Page = 'home' | 'profile' | 'chat' | 'events' | 'marketplace' | 'mentors' | 'blog' | 'groups' | 'singleArticle' | 'settings' | 'admin' | 'classes' | 'jobs' | 'mentor-dashboard' | 'gallery' | 'auth' | 'contact' | 'lostandfound' | 'friends' | 'library' | 'todolist' | 'clearance' | 'polls' | 'privacy' | 'terms' | 'cookies' | 'sitemap' | 'about' | 'alumni' | 'search';
 
 export type ReactionType = 'like' | 'love' | 'haha' | 'sad' | 'angry';
 
@@ -77,6 +77,7 @@ export interface Post {
 
 export interface Notification {
   id: string;
+  recipientId: string;
   text: string;
   isRead: boolean;
   timestamp: string;
