@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Event, User } from '../types';
 import { CalendarDaysIcon, ClockIcon, UserGroupIcon, SpinnerIcon, SuccessCheckIcon } from './icons';
 
@@ -6,11 +6,12 @@ interface EventModalProps {
   event: Event | null;
   isOpen: boolean;
   currentUser: User;
+  allUsers: User[];
   onClose: () => void;
   onRsvp: (eventId: string) => Promise<void>;
 }
 
-const EventModal: React.FC<EventModalProps> = ({ event, isOpen, currentUser, onClose, onRsvp }) => {
+const EventModal: React.FC<EventModalProps> = ({ event, isOpen, currentUser, allUsers, onClose, onRsvp }) => {
   const [isRsvping, setIsRsvping] = useState(false);
   const [isRsvpSuccess, setIsRsvpSuccess] = useState(false);
 
@@ -19,6 +20,11 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, currentUser, onC
         setIsRsvpSuccess(false);
     }
   }, [isOpen]);
+
+  const attendees = useMemo(() => {
+    if (!event) return [];
+    return allUsers.filter(user => event.attendees.includes(user.id));
+  }, [allUsers, event]);
 
   if (!isOpen || !event) {
     return null;
@@ -68,6 +74,28 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, currentUser, onC
               <span>{event.attendees.length} {event.attendees.length === 1 ? 'person is' : 'people are'} going</span>
             </div>
           </div>
+          
+          {attendees.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Who's Going</h3>
+              <div className="flex -space-x-2 overflow-hidden">
+                {attendees.slice(0, 15).map(attendee => (
+                  <img
+                    key={attendee.id}
+                    className="inline-block h-10 w-10 rounded-full ring-2 ring-white"
+                    src={attendee.avatarUrl}
+                    alt={attendee.name}
+                    title={attendee.name}
+                  />
+                ))}
+                {attendees.length > 15 && (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 ring-2 ring-white text-sm font-medium text-gray-600">
+                    +{attendees.length - 15}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <h3 className="text-lg font-semibold text-gray-800 mb-2">About this event</h3>
           <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{event.description}</p>

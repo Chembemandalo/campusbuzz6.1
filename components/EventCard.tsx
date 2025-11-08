@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Event, User } from '../types';
 import { CalendarDaysIcon, ClockIcon, UsersIcon, MapPinIcon, UserIcon, SpinnerIcon, SuccessCheckIcon } from './icons';
 
@@ -8,12 +8,18 @@ interface EventCardProps {
   onToggleExpand: () => void;
   onRsvp: (eventId: string) => Promise<void>;
   currentUser: User;
+  allUsers: User[];
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, isExpanded, onToggleExpand, onRsvp, currentUser }) => {
+const EventCard: React.FC<EventCardProps> = ({ event, isExpanded, onToggleExpand, onRsvp, currentUser, allUsers }) => {
   const [isRsvping, setIsRsvping] = useState(false);
   const [isRsvpSuccess, setIsRsvpSuccess] = useState(false);
   const isAttending = event.attendees.includes(currentUser.id);
+
+  const attendees = useMemo(() => 
+    allUsers.filter(user => event.attendees.includes(user.id)),
+    [allUsers, event.attendees]
+  );
 
   const handleRsvpClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -62,6 +68,27 @@ const EventCard: React.FC<EventCardProps> = ({ event, isExpanded, onToggleExpand
       <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[1000px]' : 'max-h-0'}`}>
         <div className="p-4 pt-0">
           <div className="border-t pt-4">
+            <h4 className="font-semibold text-gray-800 mb-3">Attendees ({attendees.length})</h4>
+            {attendees.length > 0 ? (
+                <div className="flex -space-x-2 overflow-hidden mb-4">
+                    {attendees.slice(0, 10).map(attendee => (
+                        <img
+                            key={attendee.id}
+                            className="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                            src={attendee.avatarUrl}
+                            alt={attendee.name}
+                            title={attendee.name}
+                        />
+                    ))}
+                    {attendees.length > 10 && (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 ring-2 ring-white text-xs font-medium text-gray-600">
+                            +{attendees.length - 10}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <p className="text-sm text-gray-500 mb-4">Be the first to RSVP!</p>
+            )}
             <h4 className="font-semibold text-gray-800 mb-2">Full Details</h4>
             <div className="space-y-3 text-sm text-gray-700 mb-4">
                  <div className="flex items-start">

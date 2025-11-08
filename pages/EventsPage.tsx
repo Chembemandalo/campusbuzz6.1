@@ -7,12 +7,13 @@ import { CalendarDaysIcon, MegaphoneIcon, BackButton } from '../components/icons
 interface EventsPageProps {
   events: EventType[];
   currentUser: User;
+  allUsers: User[];
   onRsvp: (eventId: string) => Promise<void>;
   onOpenCreateEventModal: () => void;
   handleBack: () => void;
 }
 
-const EventsPage: React.FC<EventsPageProps> = ({ events, currentUser, onRsvp, onOpenCreateEventModal, handleBack }) => {
+const EventsPage: React.FC<EventsPageProps> = ({ events, currentUser, allUsers, onRsvp, onOpenCreateEventModal, handleBack }) => {
   const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
@@ -98,6 +99,7 @@ const EventsPage: React.FC<EventsPageProps> = ({ events, currentUser, onRsvp, on
                         isExpanded={expandedEventId === event.id}
                         onToggleExpand={() => handleToggleExpand(event.id)}
                         currentUser={currentUser}
+                        allUsers={allUsers}
                         onRsvp={onRsvp}
                     />
                 ))

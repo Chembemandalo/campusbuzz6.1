@@ -16,6 +16,7 @@ import {
     ClipboardDocumentListIcon,
 } from '../components/icons';
 import UserDetailsModal from '../components/UserDetailsModal';
+import ImageEditorModal from '../components/ImageEditorModal';
 
 interface AdminDashboardPageProps {
   currentUser: User;
@@ -406,36 +407,57 @@ const JobManagementTab: React.FC<AdminDashboardPageProps> = ({ allJobs, onDelete
 
 
 const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
-    // ... logic remains the same ...
     const { onAdminCreatePost, heroSlides, onUpdateHeroSlide, onAddHeroSlide, onDeleteHeroSlide } = props;
     const [announcement, setAnnouncement] = useState('');
     const [editingSlideIndex, setEditingSlideIndex] = useState<number | null>(null);
     const [editingSlideData, setEditingSlideData] = useState<HeroSlide | null>(null);
     const [newSlide, setNewSlide] = useState<HeroSlide>({ category: '', title: '', description: '', imageUrl: '' });
+    
+    const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
+    const [imageToEdit, setImageToEdit] = useState<string | null>(null);
+    const [editingContext, setEditingContext] = useState<'new' | number | null>(null);
+
+
     const handlePostAnnouncement = async () => { if (!announcement.trim()) return; await onAdminCreatePost(announcement); setAnnouncement(''); };
     const handleAddNewSlide = async () => { if (!newSlide.category || !newSlide.title) return; await onAddHeroSlide(newSlide); setNewSlide({ category: '', title: '', description: '', imageUrl: '' }); };
     const handleDeleteSlide = (index: number) => { if (window.confirm('Are you sure you want to delete this banner post?')) { onDeleteHeroSlide(index); }};
     const handleEditSlide = (index: number) => { setEditingSlideIndex(index); setEditingSlideData(heroSlides[index]); };
     const handleSaveSlide = async () => { if (editingSlideIndex === null || !editingSlideData) return; await onUpdateHeroSlide(editingSlideIndex, editingSlideData); setEditingSlideIndex(null); setEditingSlideData(null); };
     
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'new' | 'edit') => {
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, context: 'new' | number) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const result = reader.result as string;
-                if (type === 'new') {
-                    setNewSlide(prev => ({ ...prev, imageUrl: result }));
-                } else if (type === 'edit' && editingSlideData) {
-                    setEditingSlideData(prev => prev ? ({ ...prev, imageUrl: result }) : null);
-                }
+                setImageToEdit(result);
+                setEditingContext(context);
+                setIsImageEditorOpen(true);
             };
             reader.readAsDataURL(file);
         }
+        e.target.value = '';
+    };
+
+    const handleImageEditorSave = (editedImage: string) => {
+        if (editingContext === 'new') {
+            setNewSlide(prev => ({ ...prev, imageUrl: editedImage }));
+        } else if (typeof editingContext === 'number' && editingSlideData) {
+            setEditingSlideData(prev => prev ? ({ ...prev, imageUrl: editedImage }) : null);
+        }
+        setIsImageEditorOpen(false);
+        setImageToEdit(null);
+        setEditingContext(null);
     };
 
     return (
         <div className="space-y-8">
+            <ImageEditorModal 
+                isOpen={isImageEditorOpen}
+                onClose={() => setIsImageEditorOpen(false)}
+                imageSrc={imageToEdit}
+                onSave={handleImageEditorSave}
+            />
             <div className="bg-white border p-6 rounded-xl">
                 <SectionTitle title="Create Announcement" description="Post an official announcement to the main newsfeed." />
                 <div className="space-y-2">
@@ -474,7 +496,7 @@ const PostManagementTab: React.FC<AdminDashboardPageProps> = (props) => {
                                  <textarea placeholder="Description" value={editingSlideData.description} onChange={(e) => setEditingSlideData({ ...editingSlideData, description: e.target.value })} className="w-full text-sm p-1 border rounded" rows={2} />
                                  <div>
                                     <label className="text-xs">Image</label>
-                                    <input type="file" onChange={(e) => handleImageUpload(e, 'edit')} accept="image/*" className="w-full text-sm p-1 border rounded bg-white" />
+                                    <input type="file" onChange={(e) => handleImageUpload(e, index)} accept="image/*" className="w-full text-sm p-1 border rounded bg-white" />
                                     {editingSlideData.imageUrl && <img src={editingSlideData.imageUrl} alt="Edit slide preview" className="w-32 h-16 object-cover mt-2 rounded"/>}
                                 </div>
                                  <div className="flex justify-end space-x-2 mt-2">
